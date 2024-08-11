@@ -1,2 +1,2 @@
-# apple-watch-workouts
-Application designed to allow users to analyze their workout data recorded by the Apple Watch
+# Apple Watch Workouts
+Application designed for users to analyze and visualize workout data captured by their Apple Watch.
