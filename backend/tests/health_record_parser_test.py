@@ -31,7 +31,7 @@ class TestHealthRecordParser(unittest.TestCase):
         ]
         self.mock_record_element.findall.return_value = self.metadata_entries
 
-    def test_to_csv_with_heart_rate_record_type(self):
+    def test_csv_row_structure_with_heart_rate_record_type(self):
         parser = health_record_parser.HealthRecordParser(
             self.mock_record_element)
         result = parser.csv_row_structure()
@@ -50,7 +50,7 @@ class TestHealthRecordParser(unittest.TestCase):
         )
         self.assertEqual(result, expected)
 
-    def test_to_csv_with_record_without_metadata(self):
+    def test_csv_row_structure_with_record_without_metadata(self):
         self.mock_record_element_type = "HKQuantityTypeIdentifierStepCount"
 
         parser = health_record_parser.HealthRecordParser(
