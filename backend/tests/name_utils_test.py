@@ -82,6 +82,16 @@ class TestNameUtils(unittest.TestCase):
         expected = "Indoor"
         self.assertEqual(result, expected)
 
+    def test_remove_record_type_prefix(self):
+        input_value = "HKQuantityTypeIdentifierDietaryWater"
+        result = name_utils.remove_record_type_prefix(input_value)
+        expected = "DietaryWater"
+        self.assertEqual(result, expected)
+        input_value = "HKCategoryTypeIdentifierSleepAnalysis"
+        result = name_utils.remove_record_type_prefix(input_value)
+        expected = "SleepAnalysis"
+        self.assertEqual(result, expected)
+
 
 if __name__ == '__main__':
     unittest.main()

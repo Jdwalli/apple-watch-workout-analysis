@@ -13,4 +13,14 @@ class AppleHealthPrefix(Enum):
     QUANTITY_TYPE_IDENTIFIER = "HKQuantityTypeIdentifier"
     WORKOUT_ACTIVITY_TYPE = "HKWorkoutActivityType"
     WORKOUT_EVENT_TYPE = "HKWorkoutEventType"
-    
+
+
+class HeartRateMotionContext(Enum):
+    """Enum of all the Heart Rate Motion Context options"""
+    NOT_SET = 0
+    SEDENTARY = 1
+    ACTIVE = 2
+
+    @classmethod
+    def from_value(cls, value: int) -> str:
+        return cls(value).name.replace('_', ' ')
