@@ -16,6 +16,32 @@ from utils import name_utils as name_utils
 
 
 class HealthRecordParser:
+    DEFAULT_HEALTH_RECORD_COLUMNS = [
+        "type",
+        "unit",
+        "value",
+        "sourceName",
+        "sourceVersion",
+        "device",
+        "creationDate",
+        "startDate",
+        "endDate"
+    ]
+    HEART_RATE_RECORD_COLUMNS = [
+        "type",
+        "unit",
+        "value",
+        "sourceName",
+        "sourceVersion",
+        "device",
+        "creationDate",
+        "startDate",
+        "endDate",
+        "heartRateMotionContext"
+    ]
+
+
+
     def __init__(self, record:  ET.Element):
         """Initializes the HealthRecordParser with an XML record element.
 
