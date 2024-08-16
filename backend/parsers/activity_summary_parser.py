@@ -62,13 +62,13 @@ class ActivitySummaryParser:
             raise TypeError(
                 f"The ActivitySummaryParser can only parse ActivitySummary tags. This object's tag is: '{self.activity_summary.tag}'")
 
-    def csv_row_structure(self):
+    def csv_row_structure(self) -> tuple:
         """Returns the CSV row structure for the activity summary 
 
         Returns:
             A tuple representing the CSV row structure for the activity summary.
         """
-        return tuple((
+        return (
             self.date,
             self.active_energy_burned,
             self.active_energy_burned_goal,
@@ -78,5 +78,5 @@ class ActivitySummaryParser:
             self.exercise_time,
             self.exercise_time_goal,
             self.stand_hours,
-            self.stand_hours_goal
-        ))
+            self.stand_hours_goal,
+        )

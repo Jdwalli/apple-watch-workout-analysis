@@ -60,7 +60,7 @@ class HealthRecordParser:
             the heart rate motion context.
         """
 
-        return tuple((
+        return (
             self.record_type,
             self.record_unit,
             self.record_value,
@@ -70,8 +70,8 @@ class HealthRecordParser:
             self.record_creation_date,
             self.record_start_date,
             self.record_end_date,
-            self._get_heart_rate_motion_context()
-        ))
+            self._get_heart_rate_motion_context(),
+        )
 
     def _get_default_record_data(self) -> tuple:
         """Formats the health record for general data.
@@ -79,7 +79,7 @@ class HealthRecordParser:
         Returns:
             A tuple containing the default formatted record data.
         """
-        return tuple((
+        return (
             self.record_type,
             self.record_unit,
             self.record_value,
@@ -89,7 +89,7 @@ class HealthRecordParser:
             self.record_creation_date,
             self.record_start_date,
             self.record_end_date,
-        ))
+        )
 
     def csv_row_structure(self) -> tuple:
         """Determines the CSV row structure based on the record type.
