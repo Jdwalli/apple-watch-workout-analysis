@@ -19,9 +19,21 @@ class ActivitySummaryParser:
         record: An XML Element representing a activity summary.
     """
 
+    ACTIVITY_SUMMARY_COLUMNS = [
+        "date",
+        "activityEnergyBurned",
+        "activityEnergyBurnedGoal",
+        "activityEnergyBurnedUnit",
+        "moveTime",
+        "moveTimeGoal",
+        "exerciseTime",
+        "exerciseTimeGoal",
+        "standHours",
+        "standHoursGoal"
+    ]
+
     def __init__(self, activity_summary: ET.Element):
         self.activity_summary = activity_summary
-
         self._check_tag_validity()
 
         self.date = self.activity_summary.get("dateComponents")

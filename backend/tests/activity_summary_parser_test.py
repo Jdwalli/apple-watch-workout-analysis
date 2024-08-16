@@ -49,6 +49,26 @@ class TestActivitySummaryParser(unittest.TestCase):
         )
         self.assertEqual(result, expected)
 
+    def test_csv_row_structure_and_columns_length_match(self):
+        parser = activity_summary_parser.ActivitySummaryParser(
+            self.mock_record_element)
+        result = parser.csv_row_structure()
+
+        expected = (
+            "1983-01-01",
+            "123",
+            "124",
+            "cal",
+            "50",
+            "45",
+            "60",
+            "60",
+            "2",
+            "9"
+        )
+        self.assertEqual(result, expected)
+        self.assertEqual(len(result), len(parser.ACTIVITY_SUMMARY_COLUMNS))
+
 
 
 if __name__ == '__main__':
