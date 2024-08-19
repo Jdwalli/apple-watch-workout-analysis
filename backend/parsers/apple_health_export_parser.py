@@ -12,13 +12,13 @@ class AppleHealthExportParser:
         self.export_file = export_file
         self.export_file_path = "apple_health_export/"
         self.zipFile = ZipFile(self.export_file, "r")
-        self._validate_apple_health_export()
-
-        self.export_root = self._generate_root()
-
+        
         self.health_export_file_path = os.path.join(self.export_file_path, "export.xml")
         self.workout_routes_directory_path = os.path.join(self.export_file_path, "workout-routes")
         self.electrocardiograms_directory_path = os.path.join(self.export_file_path, "electrocardiograms")
+
+        self._validate_apple_health_export()
+        self.export_root = self._generate_root()
 
 
     def _validate_apple_health_export(self):
@@ -40,10 +40,12 @@ class AppleHealthExportParser:
         try:
             return ET.fromstring(self.zipFile.read(self.health_export_file_path))
         except Exception as e:
-            raise RuntimeError(f"Exception occurred when trying to parse the tree root: {e}")
+            raise RuntimeError(
+                f"Exception occurred when trying to parse the tree root: {e}"
+            ) from e
 
     def _parse_activity_summary_elements(self) -> None:
-        activity_summary_path = os.path.join(config.HEALTH_ELEMENTS_DIRECTORY, "activity_summaries")
+        activity_summary_path = os.path.join(config.HEALTH_ELEMENTS_DIRECTORY, "activity_summaries.csv")
         self.activity_summaries = self.export_root.findall("ActivitySummary")
         parsed_activity_summaries = [
             ActivitySummaryParser(activity_summary).csv_row_structure()
