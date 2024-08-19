@@ -1,4 +1,10 @@
 from enum import Enum
+import os 
+
+DATA_DIRECTORY = os.path.join(os.getcwd(), "export_data")
+HEALTH_ELEMENTS_DIRECTORY = os.path.join(DATA_DIRECTORY, "health_records")
+WORKOUT_ELEMENTS_DIRECTORY = os.path.join(DATA_DIRECTORY, "workout_records")
+
 
 class AppleHealthPrefix(Enum):
     """Enum of all the Apple Health prefixes"""
