@@ -6,20 +6,24 @@ import pandas as pd
 import config
 
 from parsers.activity_summary_parser import ActivitySummaryParser
+from parsers.workout_record_parser import WorkoutRouteParser
+
 
 class AppleHealthExportParser:
     def __init__(self, export_file: FileStorage):
         self.export_file = export_file
         self.export_file_path = "apple_health_export/"
         self.zipFile = ZipFile(self.export_file, "r")
-        
-        self.health_export_file_path = os.path.join(self.export_file_path, "export.xml")
-        self.workout_routes_directory_path = os.path.join(self.export_file_path, "workout-routes")
-        self.electrocardiograms_directory_path = os.path.join(self.export_file_path, "electrocardiograms")
+
+        self.health_export_file_path = os.path.join(
+            self.export_file_path, "export.xml")
+        self.workout_routes_directory_path = os.path.join(
+            self.export_file_path, "workout-routes")
+        self.electrocardiograms_directory_path = os.path.join(
+            self.export_file_path, "electrocardiograms")
 
         self._validate_apple_health_export()
         self.export_root = self._generate_root()
-
 
     def _validate_apple_health_export(self):
         """Validates whether the provided file is a valid Apple Health export.
@@ -45,14 +49,16 @@ class AppleHealthExportParser:
             ) from e
 
     def _parse_activity_summary_elements(self) -> None:
-        activity_summary_path = os.path.join(config.HEALTH_ELEMENTS_DIRECTORY, "activity_summaries.csv")
+        activity_summary_path = os.path.join(
+            config.HEALTH_ELEMENTS_DIRECTORY, config.ACTIVITY_SUMMARY_FILE_NAME)
         self.activity_summaries = self.export_root.findall("ActivitySummary")
         parsed_activity_summaries = [
             ActivitySummaryParser(activity_summary).csv_row_structure()
             for activity_summary in self.activity_summaries
         ]
 
-        df = pd.DataFrame(parsed_activity_summaries, columns=ActivitySummaryParser.ACTIVITY_SUMMARY_COLUMNS)
+        df = pd.DataFrame(parsed_activity_summaries,
+                          columns=ActivitySummaryParser.ACTIVITY_SUMMARY_COLUMNS)
         df.to_csv(activity_summary_path, index=False, header=True)
 
     def _parse_workout_elements(self) -> None:
@@ -62,7 +68,23 @@ class AppleHealthExportParser:
         return NotImplementedError
 
     def _parse_gpx_files(self) -> None:
-        return NotImplementedError
+        gpx_file_paths = [
+            file.filename
+            for file in self.zipFile.infolist()
+            if file.filename.startswith(self.workout_routes_directory_path)
+        ]
+
+        for gpx_file_path in gpx_file_paths:
+            ns = {"gpx": "http://www.topografix.com/GPX/1/1"}
+            tracks = ET.fromstring(self.zipFile.read(
+                gpx_file_path)).findall('gpx:trk', ns)
+
+            df = WorkoutRouteParser(tracks).to_dataframe()
+
+            filename_without_extension, _ = os.path.splitext(
+                os.path.basename(gpx_file_path))
+            df.to_csv(os.path.join(config.WORKOUT_ROUTE_ELEMENTS_DIRECTORY,
+                      f"{filename_without_extension}.csv"), index=False, header=True)
 
     def parse_health_elements(self):
         self._parse_gpx_files()
