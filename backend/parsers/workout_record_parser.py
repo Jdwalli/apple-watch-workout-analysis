@@ -2,16 +2,15 @@
 Parses Apple health workout data and converts it into CSV-compatible row structures.
 
 This module provides the `WorkoutRouteParser` class, which is used to parse
-trkpt (track point) elements stored in a GPX format and convert them into
-tuples that can be exported to CSV files.
+tracks elements stored in a GPX format and convert them into a dataframe.
 
 This module provides the `WorkoutRecordParser` class, which is used to parse
 Workout elements stored in a xml format and convert them into tuples that can 
 be exported to CSV files.
 
 Usage example:
-    trk_point = WorkoutRouteParser(track_point)
-    trk_point_row = trk_point.csv_row_structure()
+    workout_tracks = WorkoutRouteParser(tracks)
+    df = workout_tracks.to_dataframe()
 
 Usage example:
     workout = WorkoutRecordParser(workout)
@@ -46,7 +45,7 @@ class WorkoutRouteParser:
         self.tracks = tracks
         self.workout_route_data = []
 
-    def _get_track_segments(self, track: ET.Element):
+    def _get_track_segments(self, track: ET.Element) -> ET.Element:
         """Retrieves all track segments within a track element.
 
         Args:
@@ -57,8 +56,8 @@ class WorkoutRouteParser:
             within the provided track element.
         """
         return track.findall('gpx:trkseg', self.ns)
-    
-    def _get_track_points(self, track_segment: ET.Element):
+
+    def _get_track_points(self, track_segment: ET.Element) -> ET.Element:
         """Retrieves all track points within a track element.
 
         Args:
@@ -70,8 +69,7 @@ class WorkoutRouteParser:
         """
         return track_segment.findall('gpx:trkpt', self.ns)
 
-
-    def _extract_gpx_data(self):
+    def _extract_gpx_data(self) -> None:
         """Extracts data from GPX tracks and stores it in the workout_route_data list.
 
         This method iterates over each track, retrieves its segments, and then extracts
@@ -88,6 +86,11 @@ class WorkoutRouteParser:
     def _to_csv_row_structure(self, track_point: ET.Element) -> tuple:
         """Constructs a tuple representing the CSV row structure for a given track point.
 
+        The units of the elements can be found at https://www.topografix.com/GPX/1/1/gpx.xsd
+
+
+
+
         Args:
             track_point: An XML element representing a track point ('trkpt') 
                         from a GPX file.
@@ -95,13 +98,13 @@ class WorkoutRouteParser:
         Returns:
             A tuple containing the following elements extracted from the track point:
             - Longitude (lon)
-            - Latitude (lat)
-            - Elevation (ele)
+            - Latitude (lat) 
+            - Elevation (ele) (Meters)
             - Time (time)
-            - Speed (speed)
-            - Course (course)
-            - Horizontal Accuracy (hAcc)
-            - Vertical Accuracy (vAcc)
+            - Speed (speed) (Meters Per Second)
+            - Course (course) (Decimal Degrees)
+            - Horizontal Accuracy (hAcc) (Meters)
+            - Vertical Accuracy (vAcc) (Meters)
         """
         elevation = track_point.find('gpx:ele', self.ns).text
         time = track_point.find('gpx:time', self.ns).text
@@ -116,6 +119,18 @@ class WorkoutRouteParser:
         return (lon, lat, elevation, time, speed, course, hAcc, vAcc)
 
     def to_dataframe(self) -> pd.DataFrame:
+        """Converts the extracted GPX data into a pandas DataFrame.
+
+        This method calls the _extract_gpx_data method to populate the 
+        workout_route_data list with  data from the GPX tracks. 
+        It then converts this list into a pandas DataFrame, using the 
+        WORKOUT_ROUTE_COLUMNS as the column.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the workout route data, with 
+                          columns for longitude, latitude, elevation, time, 
+                          speed, course, horizontal accuracy, and vertical accuracy.
+        """
         self._extract_gpx_data()
         return pd.DataFrame(self.workout_route_data, columns=self.WORKOUT_ROUTE_COLUMNS)
 
