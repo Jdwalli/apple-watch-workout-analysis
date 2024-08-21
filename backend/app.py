@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from parsers.apple_health_export_parser import AppleHealthExportParser
+from utils.file_utils import create_health_export_directories
 
 FLASK_CONFIG = {
     "DEBUG": True,
@@ -31,4 +32,5 @@ def send_requested_workout():
     return NotImplementedError
 
 if __name__ == "__main__":
+    create_health_export_directories()
     app.run(debug=True)
