@@ -11,7 +11,7 @@ Usage example:
 """
 
 import xml.etree.cElementTree as ET
-from config import HeartRateMotionContext
+from config import HeartRateMotionContext, VO2MaxTestType
 from utils import name_utils as name_utils
 
 
@@ -28,25 +28,18 @@ class HealthRecordParser:
         "startDate",
         "endDate"
     ]
-    
-    HEART_RATE_RECORD_COLUMNS = [
-        "type",
-        "unit",
-        "value",
-        "sourceName",
-        "sourceVersion",
-        "device",
-        "creationDate",
-        "startDate",
-        "endDate",
-        "heartRateMotionContext"
-    ]
+
+    HEART_RATE_RECORD_COLUMNS = (
+        DEFAULT_HEALTH_RECORD_COLUMNS + ["heartRateMotionContext"])
+    VO2_MAX_COLUMNS = (DEFAULT_HEALTH_RECORD_COLUMNS + ["testType"])
 
     @staticmethod
     def get_column_type(record_type: str):
         match record_type:
             case "HeartRate":
                 return HealthRecordParser.HEART_RATE_RECORD_COLUMNS
+            case "VO2Max":
+                return HealthRecordParser.VO2_MAX_COLUMNS
             case _:
                 return HealthRecordParser.DEFAULT_HEALTH_RECORD_COLUMNS
 
@@ -86,6 +79,23 @@ class HealthRecordParser:
                 return HeartRateMotionContext.from_value(int(metadata_entry.get('value')))
         return 'NOT FOUND'
 
+    def _get_vo2_max_test_type(self) -> str:
+        """Fetches the VO2 max test type from the metadata.
+
+        Iterates through all MetadataEntry elements in the record to find the
+        record with the key "HKVO2MaxTestType".
+
+        Returns:
+            A string representing the VO2 max test type value. If the context
+            is not found, "NOT FOUND" is returned.
+        """
+
+        metadata_entries = self.record.findall('MetadataEntry')
+        for metadata_entry in metadata_entries:
+            if metadata_entry.get("key") == "HKVO2MaxTestType":
+                return VO2MaxTestType.from_value(int(metadata_entry.get('value')))
+        return 'NOT FOUND'
+
     def _format_heart_rate_record(self) -> tuple:
         """Formats the health record specifically for HeartRate type.
 
@@ -105,6 +115,27 @@ class HealthRecordParser:
             self.record_start_date,
             self.record_end_date,
             self._get_heart_rate_motion_context(),
+        )
+
+    def _format_VO2_max_record(self):
+        """Formats the health record specifically for VO2Max type.
+
+        Returns:
+            A tuple containing the formatted VO2Max record data, including
+            the test type.
+        """
+
+        return (
+            self.record_type,
+            self.record_unit,
+            self.record_value,
+            self.record_source_name,
+            self.record_source_version,
+            self.record_device,
+            self.record_creation_date,
+            self.record_start_date,
+            self.record_end_date,
+            self._get_vo2_max_test_type(),
         )
 
     def _get_default_record_data(self) -> tuple:
@@ -137,5 +168,7 @@ class HealthRecordParser:
         match self.record_type:
             case 'HeartRate':
                 return self._format_heart_rate_record()
+            case 'VO2Max':
+                return self._format_VO2_max_record()
             case _:
                 return self._get_default_record_data()

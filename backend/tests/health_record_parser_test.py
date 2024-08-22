@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock
 import xml.etree.ElementTree as ET
 from parsers import health_record_parser
-from config import HeartRateMotionContext
+from config import HeartRateMotionContext, VO2MaxTestType
 
 
 class TestHealthRecordParser(unittest.TestCase):
@@ -28,6 +28,10 @@ class TestHealthRecordParser(unittest.TestCase):
                 'key': 'HKMetadataKeyHeartRateMotionContext',
                 'value': '1'
             }.get(key, None)),
+            Mock(spec=ET.Element, tag='MetadataEntry', get=lambda key: {
+                'key': 'HKVO2MaxTestType',
+                'value': '1'
+            }.get(key, None))
         ]
         self.mock_record_element.findall.return_value = self.metadata_entries
 
@@ -57,6 +61,35 @@ class TestHealthRecordParser(unittest.TestCase):
 
         self.assertEqual(len(result), len(parser.HEART_RATE_RECORD_COLUMNS))
 
+    def test_csv_row_structure_with_vo2_max_record_type(self):
+        self.mock_record_element_type = "HKQuantityTypeIdentifierVO2Max"
+
+        parser = health_record_parser.HealthRecordParser(
+            self.mock_record_element)
+        result = parser.csv_row_structure()
+
+        expected = (
+            "VO2Max",
+            "wpm",
+            "123",
+            "Mock Test Source",
+            "1.0.0",
+            "Unknown",
+            "123",
+            "456",
+            "789",
+            VO2MaxTestType.MAX_EXERCISE.name.replace('_', ' ')
+        )
+        self.assertEqual(result, expected)
+
+    def test_csv_row_structure_with_vo2_max_record_type_and_columns_length_match(self):
+        self.mock_record_element_type = "HKQuantityTypeIdentifierVO2Max"
+        parser = health_record_parser.HealthRecordParser(
+            self.mock_record_element)
+        result = parser.csv_row_structure()
+
+        self.assertEqual(len(result), len(parser.VO2_MAX_COLUMNS))
+
     def test_csv_row_structure_with_record_without_metadata(self):
         self.mock_record_element_type = "HKQuantityTypeIdentifierStepCount"
 
@@ -83,7 +116,8 @@ class TestHealthRecordParser(unittest.TestCase):
             self.mock_record_element)
         result = parser.csv_row_structure()
 
-        self.assertEqual(len(result), len(parser.DEFAULT_HEALTH_RECORD_COLUMNS))
+        self.assertEqual(len(result), len(
+            parser.DEFAULT_HEALTH_RECORD_COLUMNS))
 
 
 if __name__ == '__main__':

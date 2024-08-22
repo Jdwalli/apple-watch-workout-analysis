@@ -1,11 +1,13 @@
 from enum import Enum
-import os 
+import os
 
 DATA_DIRECTORY = os.path.join(os.getcwd(), "export_data")
 HEALTH_ELEMENTS_DIRECTORY = os.path.join(DATA_DIRECTORY, "health_records")
-ELECTROCARDIOGRAM_ELEMENTS_DIRECTORY = os.path.join(DATA_DIRECTORY, "electrocardiograms")
+ELECTROCARDIOGRAM_ELEMENTS_DIRECTORY = os.path.join(
+    DATA_DIRECTORY, "electrocardiograms")
 WORKOUT_ELEMENTS_DIRECTORY = os.path.join(DATA_DIRECTORY, "workout_records")
-WORKOUT_ROUTE_ELEMENTS_DIRECTORY = os.path.join(WORKOUT_ELEMENTS_DIRECTORY, "workout-routes")
+WORKOUT_ROUTE_ELEMENTS_DIRECTORY = os.path.join(
+    WORKOUT_ELEMENTS_DIRECTORY, "workout-routes")
 
 HEALTH_EXPORT_DIRECTORIES = [
     DATA_DIRECTORY,
@@ -17,6 +19,7 @@ HEALTH_EXPORT_DIRECTORIES = [
 
 ACTIVITY_SUMMARY_FILE_NAME = 'activity_summaries.csv'
 WORKOUTS_SUMMARY_FILE_NAME = 'workouts.csv'
+
 
 class AppleHealthPrefix(Enum):
     """Enum of all the Apple Health prefixes"""
@@ -41,7 +44,20 @@ class HeartRateMotionContext(Enum):
     @classmethod
     def from_value(cls, value: int) -> str:
         return cls(value).name.replace('_', ' ')
-    
+
+
+# https://developer.apple.com/documentation/healthkit/hkvo2maxtesttype
+class VO2MaxTestType(Enum):
+    """Enum of all the V02 Max Test Types"""
+    MAX_EXERCISE = 1
+    PREDICTION_SUB_MAX_EXERCISE = 2
+    PREDICTION_NON_EXERCISE = 3
+
+    @classmethod
+    def from_value(cls, value: int) -> str:
+        return cls(value).name.replace('_', ' ')
+
+
 class PhysicalEffortEstimationType(Enum):
     """Enum of all the physical effort estimation types"""
     ACTIVITY_LOOKUP = 1
@@ -50,7 +66,6 @@ class PhysicalEffortEstimationType(Enum):
     @classmethod
     def from_value(cls, value: int) -> str:
         return cls(value).name.replace('_', ' ')
-
 
 
 # https://developer.apple.com/documentation/healthkit/hkworkoutswimminglocationtype
@@ -65,7 +80,7 @@ class SwimmingLocations(Enum):
         return cls(value).name.replace('_', ' ')
 
 
-# https://developer.apple.com/documentation/healthkit/hkswimmingstrokestyle 
+# https://developer.apple.com/documentation/healthkit/hkswimmingstrokestyle
 class SwimmingStrokeStyles(Enum):
     """Enum of all the swimming stroke styles"""
     UNKNOWN = 0
@@ -79,7 +94,7 @@ class SwimmingStrokeStyles(Enum):
     @classmethod
     def from_value(cls, value: int) -> str:
         return cls(value).name.replace('_', ' ')
-    
+
 
 # https://developer.apple.com/documentation/healthkit/hkworkoutsessiontype
 class WorkoutSessionType(Enum):
