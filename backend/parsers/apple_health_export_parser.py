@@ -5,8 +5,6 @@ import os
 import pandas as pd
 import config
 from utils import name_utils as name_utils
-import time 
-
 
 from parsers.activity_summary_parser import ActivitySummaryParser
 from parsers.workout_record_parser import WorkoutRouteParser, WorkoutRecordParser
@@ -74,14 +72,15 @@ class AppleHealthExportParser:
             list(WorkoutRecordParser(workout).csv_row_structure())
             for workout in self.workouts
         ]
-        
+
         df = pd.DataFrame(
             parsed_workouts, columns=WorkoutRecordParser.MASTER_WORKOUT_COLUMNS)
         df.to_csv(parsed_workout_path, index=False, header=True)
 
     def _parse_health_record_elements(self) -> None:
         self.records = self.export_root.findall('Record')
-        records_data = {name_utils.remove_record_type_prefix(record.get("type")): [] for record in self.records}
+        records_data = {name_utils.remove_record_type_prefix(
+            record.get("type")): [] for record in self.records}
 
         for record in self.records:
             current_record = HealthRecordParser(record)
@@ -89,12 +88,13 @@ class AppleHealthExportParser:
             record_data = current_record.csv_row_structure()
 
             records_data[record_type].append(record_data)
-        
-        for record in records_data:
-            records_data[record] = pd.DataFrame(records_data[record], columns=HealthRecordParser.get_column_type(record))
-            df = pd.DataFrame.from_dict(records_data[record])
-            df.to_csv(os.path.join(config.HEALTH_ELEMENTS_DIRECTORY, f"{record}.csv"), index=False, header=True)
 
+        for record in records_data:
+            records_data[record] = pd.DataFrame(
+                records_data[record], columns=HealthRecordParser.get_column_type(record))
+            df = pd.DataFrame.from_dict(records_data[record])
+            df.to_csv(os.path.join(config.HEALTH_ELEMENTS_DIRECTORY,
+                      f"{record}.csv"), index=False, header=True)
 
     def _parse_gpx_files(self) -> None:
         gpx_file_paths = [
@@ -116,7 +116,7 @@ class AppleHealthExportParser:
                       f"{filename_without_extension}.csv"), index=False, header=True)
 
     def parse_health_elements(self):
-        # self._parse_gpx_files()
+        self._parse_gpx_files()
         self._parse_health_record_elements()
-        # self._parse_activity_summary_elements()
-        # self._parse_workout_elements()
+        self._parse_activity_summary_elements()
+        self._parse_workout_elements()

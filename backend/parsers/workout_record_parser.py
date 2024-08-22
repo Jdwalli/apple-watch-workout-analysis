@@ -472,7 +472,3 @@ class WorkoutRecordParser:
 
     def csv_row_structure(self) -> tuple:
         return self._get_workout_record_data() + self._get_workout_statistics(self.workout_statistics) + self._get_workout_metadata(self.metadata_entries) + self._get_workout_file_reference()
-
-
-
-
