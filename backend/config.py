@@ -5,7 +5,7 @@ DATA_DIRECTORY = os.path.join(os.getcwd(), "export_data")
 HEALTH_ELEMENTS_DIRECTORY = os.path.join(DATA_DIRECTORY, "health_records")
 ELECTROCARDIOGRAM_ELEMENTS_DIRECTORY = os.path.join(DATA_DIRECTORY, "electrocardiograms")
 WORKOUT_ELEMENTS_DIRECTORY = os.path.join(DATA_DIRECTORY, "workout_records")
-WORKOUT_ROUTE_ELEMENTS_DIRECTORY = os.path.join(WORKOUT_ELEMENTS_DIRECTORY, "workout_routes")
+WORKOUT_ROUTE_ELEMENTS_DIRECTORY = os.path.join(WORKOUT_ELEMENTS_DIRECTORY, "workout-routes")
 
 HEALTH_EXPORT_DIRECTORIES = [
     DATA_DIRECTORY,
@@ -16,7 +16,7 @@ HEALTH_EXPORT_DIRECTORIES = [
 ]
 
 ACTIVITY_SUMMARY_FILE_NAME = 'activity_summaries.csv'
-
+WORKOUTS_SUMMARY_FILE_NAME = 'workouts.csv'
 
 class AppleHealthPrefix(Enum):
     """Enum of all the Apple Health prefixes"""
@@ -37,6 +37,15 @@ class HeartRateMotionContext(Enum):
     NOT_SET = 0
     SEDENTARY = 1
     ACTIVE = 2
+
+    @classmethod
+    def from_value(cls, value: int) -> str:
+        return cls(value).name.replace('_', ' ')
+    
+class PhysicalEffortEstimationType(Enum):
+    """Enum of all the physical effort estimation types"""
+    ACTIVITY_LOOKUP = 1
+    DEVICE_SENSED = 2
 
     @classmethod
     def from_value(cls, value: int) -> str:

@@ -61,6 +61,10 @@ class TestNameUtils(unittest.TestCase):
         result = name_utils.extract_device_name(device_name)
         expected = "Apple Watch"
         self.assertEqual(result, expected)
+        device_name = None
+        result = name_utils.extract_device_name(device_name)
+        expected = "Unknown Device Name"
+        self.assertEqual(result, expected)
 
     def test_remove_metadata_prefix(self):
         input_value = "HKMetadataKeyExternalUUID"

@@ -6,7 +6,7 @@ import pandas as pd
 import config
 
 from parsers.activity_summary_parser import ActivitySummaryParser
-from parsers.workout_record_parser import WorkoutRouteParser
+from parsers.workout_record_parser import WorkoutRouteParser, WorkoutRecordParser
 
 
 class AppleHealthExportParser:
@@ -62,7 +62,18 @@ class AppleHealthExportParser:
         df.to_csv(activity_summary_path, index=False, header=True)
 
     def _parse_workout_elements(self) -> None:
-        return NotImplementedError
+        parsed_workout_path = os.path.join(
+            config.WORKOUT_ELEMENTS_DIRECTORY, config.WORKOUTS_SUMMARY_FILE_NAME)
+        self.workouts = self.export_root.findall('Workout')
+
+        parsed_workouts = [
+            list(WorkoutRecordParser(workout).csv_row_structure())
+            for workout in self.workouts
+        ]
+        
+        df = pd.DataFrame(
+            parsed_workouts, columns=WorkoutRecordParser.MASTER_WORKOUT_COLUMNS)
+        df.to_csv(parsed_workout_path, index=False, header=True)
 
     def _parse_health_record_elements(self) -> None:
         return NotImplementedError

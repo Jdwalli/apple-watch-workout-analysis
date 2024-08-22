@@ -4,8 +4,10 @@ from config import AppleHealthPrefix
 
 def extract_device_name(raw_device_name: str) -> str:
     """Extracts device name using regex from a given string."""
-    pattern = r"name:([^,]+)"
-    return match[1] if (match := re.search(pattern, raw_device_name)) else ''
+    if raw_device_name:
+        pattern = r"name:([^,]+)"
+        return match[1] if (match := re.search(pattern, raw_device_name)) else ''
+    return 'Unknown Device Name'
 
 
 def determine_workout_location(input: str) -> str:

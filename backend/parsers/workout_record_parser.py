@@ -5,7 +5,7 @@ This module provides the `WorkoutRouteParser` class, which is used to parse
 tracks elements stored in a GPX format and convert them into a dataframe.
 
 This module provides the `WorkoutRecordParser` class, which is used to parse
-Workout elements stored in a xml format and convert them into tuples that can 
+Workout elements stored in a xml format and convert them into tuples that can
 be exported to CSV files.
 
 Usage example:
@@ -21,6 +21,7 @@ import xml.etree.cElementTree as ET
 from utils import name_utils as name_utils
 from typing import List
 import pandas as pd
+import config
 
 
 class WorkoutRouteParser:
@@ -52,7 +53,7 @@ class WorkoutRouteParser:
             track: An XML element representing a track from a GPX file.
 
         Returns:
-            A list of XML elements representing the track segments ('trkseg') 
+            A list of XML elements representing the track segments ('trkseg')
             within the provided track element.
         """
         return track.findall('gpx:trkseg', self.ns)
@@ -64,7 +65,7 @@ class WorkoutRouteParser:
             track: An XML element representing a track_segment from a GPX file.
 
         Returns:
-            A list of XML elements representing the track points ('trkpt') 
+            A list of XML elements representing the track points ('trkpt')
             within the provided track element.
         """
         return track_segment.findall('gpx:trkpt', self.ns)
@@ -92,13 +93,13 @@ class WorkoutRouteParser:
 
 
         Args:
-            track_point: An XML element representing a track point ('trkpt') 
+            track_point: An XML element representing a track point ('trkpt')
                         from a GPX file.
 
         Returns:
             A tuple containing the following elements extracted from the track point:
             - Longitude (lon)
-            - Latitude (lat) 
+            - Latitude (lat)
             - Elevation (ele) (Meters)
             - Time (time)
             - Speed (speed) (Meters Per Second)
@@ -121,14 +122,14 @@ class WorkoutRouteParser:
     def to_dataframe(self) -> pd.DataFrame:
         """Converts the extracted GPX data into a pandas DataFrame.
 
-        This method calls the _extract_gpx_data method to populate the 
-        workout_route_data list with  data from the GPX tracks. 
-        It then converts this list into a pandas DataFrame, using the 
+        This method calls the _extract_gpx_data method to populate the
+        workout_route_data list with  data from the GPX tracks.
+        It then converts this list into a pandas DataFrame, using the
         WORKOUT_ROUTE_COLUMNS as the column.
 
         Returns:
-            pd.DataFrame: A DataFrame containing the workout route data, with 
-                          columns for longitude, latitude, elevation, time, 
+            pd.DataFrame: A DataFrame containing the workout route data, with
+                          columns for longitude, latitude, elevation, time,
                           speed, course, horizontal accuracy, and vertical accuracy.
         """
         self._extract_gpx_data()
@@ -136,8 +137,342 @@ class WorkoutRouteParser:
 
 
 class WorkoutRecordParser:
-    def __init__(self):
-        pass
 
-    def csv_row_structure(self):
-        pass
+    WORKOUT_COLUMNS = [
+        "workoutActivityType",
+        "duration",
+        "durationUnit",
+        "sourceName",
+        "sourceVersion",
+        "device",
+        "creationDate",
+        "startDate",
+        "endDate"
+    ]
+
+    WORKOUT_STATISTICS_COLUMNS = [
+        "activeEnergyBurned",
+        "activeEnergyBurnedUnit",
+        "distanceWalkingRunning",
+        "distanceWalkingRunningUnit",
+        "basalEnergyBurned",
+        "basalEnergyBurnedUnit",
+        "minimumHeartRate",
+        "maximumHeartRate",
+        "averageHeartRate",
+        "heartRateUnit",
+        "stepCount",
+        "stepCountUnit",
+        "minimumGroundContactTime",
+        "maximumGroundContactTime",
+        "averageGroundContactTime",
+        "groundContactTimeUnit",
+        "minimumRunningPower",
+        "maximumRunningPower",
+        "averageRunningPower",
+        "runningPowerUnit",
+        "minimumRunningVerticalOscillation",
+        "maximumRunningVerticalOscillation",
+        "averageRunningVerticalOscillation",
+        "runningVerticalOscillationUnit",
+        "minimumRunningSpeed",
+        "maximumRunningSpeed",
+        "averageRunningSpeed",
+        "runningSpeedUnit",
+        "minimumRunningStrideLength",
+        "maximumRunningStrideLength",
+        "averageRunningStrideLength",
+        "runningStrideLengthUnit",
+        "distanceSwimming",
+        "distanceSwimmingUnit",
+        "swimmingStrokeCount",
+        "swimmingStrokeCountUnit"
+    ]
+
+    WORKOUT_METADATA_COLUMNS = [
+        "indoorWorkout",
+        "temperature",
+        "humidity",
+        "timeZone",
+        "averageMETs",
+        "physicalEffortEstimationType",
+        "elevationAscended",
+        "elevationDescended",
+        "averageSpeed",
+        "maximumSpeed",
+        "swimmingLocationType",
+        "swimmingStrokeStyle",
+        "lapLength",
+        "swolfScore",
+        "waterSalinity"
+    ]
+
+    WORKOUT_ROUTE_COLUMNS = [
+        "FileReference"
+    ]
+
+    MASTER_WORKOUT_COLUMNS = (
+        WORKOUT_COLUMNS +
+        WORKOUT_STATISTICS_COLUMNS +
+        WORKOUT_METADATA_COLUMNS +
+        WORKOUT_ROUTE_COLUMNS
+    )
+
+    def __init__(self, workout_record: ET.Element):
+        self.workout_record = workout_record
+        self.workout_route = self.workout_record.find('WorkoutRoute')
+        self.metadata_entries = self.workout_record.findall("MetadataEntry")
+        self.workout_statistics = self.workout_record.findall(
+            "WorkoutStatistics")
+        self.workout_events = self.workout_record.findall('WorkoutEvent')
+
+    def _get_workout_record_data(self) -> tuple:
+        return (
+            self.workout_record.get("workoutActivityType"),
+            self.workout_record.get("duration"),
+            self.workout_record.get("durationUnit"),
+            self.workout_record.get("sourceName"),
+            self.workout_record.get("sourceVersion"),
+            name_utils.extract_device_name(self.workout_record.get("device")),
+            self.workout_record.get("creationDate"),
+            self.workout_record.get("startDate"),
+            self.workout_record.get("endDate"),
+        )
+
+    def _get_workout_file_reference(self) -> tuple:
+        file_path = ""
+        if self.workout_route:
+            file_reference = self.workout_route.find('FileReference')
+            if file_reference is not None and "path" in file_reference.attrib:
+                file_path = file_reference.attrib["path"]
+        return (file_path,)
+
+    def _get_workout_metadata(self, metadata_list: List[ET.Element]) -> tuple:
+        indoorWorkout = ""
+        temperature = ""
+        humidity = ""
+        timeZone = ""
+        averageMETs = ""
+        physicalEffortEstimationType = ""
+        elevationAscended = ""
+        elevationDescended = ""
+        averageSpeed = ""
+        maximumSpeed = ""
+        swimmingLocationType = ""
+        swimmingStrokeStyle = ""
+        lapLength = ""
+        swolfScore = ""
+        waterSalinity = ""
+
+        for metadata in metadata_list:
+            match metadata.get("key"):
+                case "HKIndoorWorkout":
+                    indoorWorkout = name_utils.determine_workout_location(
+                        metadata.get("value")
+                    )
+                case "HKWeatherTemperature":
+                    temperature = metadata.get("value", "")
+                case "HKWeatherHumidity":
+                    humidity = metadata.get("value", "")
+                case "HKTimeZone":
+                    timeZone = metadata.get("value", "")
+                case "HKAverageMETs":
+                    averageMETs = metadata.get("value", "")
+                case "HKPhysicalEffortEstimationType":
+                    if value := metadata.get("value"):
+                        physicalEffortEstimationType = (
+                            config.PhysicalEffortEstimationType.from_value(
+                                int(value)
+                            )
+                        )
+                case "HKElevationAscended":
+                    elevationAscended = metadata.get("value", "")
+                case "HKElevationDescended":
+                    elevationDescended = metadata.get("value", "")
+                case "HKAverageSpeed":
+                    averageSpeed = metadata.get("value", "")
+                case "HKMaximumSpeed":
+                    maximumSpeed = metadata.get("value", "")
+                case "HKSwimmingLocationType":
+                    swimmingLocationType = config.SwimmingLocations.from_value(
+                        int(metadata.get("value"))
+                    )
+                case "HKSwimmingStrokeStyle":
+                    swimmingStrokeStyle = config.SwimmingStrokeStyles.from_value(
+                        int(metadata.get("value"))
+                    )
+                case "HKLapLength":
+                    lapLength = metadata.get("value", "")
+                case "HKSWOLFScore":
+                    swolfScore = metadata.get("value", "")
+                case "HKWaterSalinity":
+                    waterSalinity = metadata.get("value", "")
+        return (
+            indoorWorkout,
+            temperature,
+            humidity,
+            timeZone,
+            averageMETs,
+            physicalEffortEstimationType,
+            elevationAscended,
+            elevationDescended,
+            averageSpeed,
+            maximumSpeed,
+            swimmingLocationType,
+            swimmingStrokeStyle,
+            lapLength,
+            swolfScore,
+            waterSalinity
+        )
+
+    def _get_workout_statistics(self, workout_statistics: List[ET.Element]):
+        activeEnergyBurned = ""
+        activeEnergyBurnedUnit = ""
+        distanceWalkingRunning = ""
+        distanceWalkingRunningUnit = ""
+        basalEnergyBurned = ""
+        basalEnergyBurnedUnit = ""
+        minimumHeartRate = ""
+        maximumHeartRate = ""
+        averageHeartRate = ""
+        heartRateUnit = ""
+        stepCount = ""
+        stepCountUnit = ""
+        minimumGroundContactTime = ""
+        maximumGroundContactTime = ""
+        averageGroundContactTime = ""
+        groundContactTimeUnit = ""
+        minimumRunningPower = ""
+        maximumRunningPower = ""
+        averageRunningPower = ""
+        runningPowerUnit = ""
+        minimumRunningVerticalOscillation = ""
+        maximumRunningVerticalOscillation = ""
+        averageRunningVerticalOscillation = ""
+        runningVerticalOscillationUnit = ""
+        minimumRunningSpeed = ""
+        maximumRunningSpeed = ""
+        averageRunningSpeed = ""
+        runningSpeedUnit = ""
+        minimumRunningStrideLength = ""
+        maximumRunningStrideLength = ""
+        averageRunningStrideLength = ""
+        runningStrideLengthUnit = ""
+        distanceSwimming = ""
+        distanceSwimmingUnit = ""
+        swimmingStrokeCount = ""
+        swimmingStrokeCountUnit = ""
+
+        for statistic in workout_statistics:
+            match statistic.get("type"):
+                case "HKQuantityTypeIdentifierActiveEnergyBurned":
+                    activeEnergyBurned = float(statistic.get("sum"))
+                    activeEnergyBurnedUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierDistanceWalkingRunning":
+                    distanceWalkingRunning = float(statistic.get("sum"))
+                    distanceWalkingRunningUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierBasalEnergyBurned":
+                    basalEnergyBurned = float(statistic.get("sum"))
+                    basalEnergyBurnedUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierHeartRate":
+                    averageHeartRate = float(statistic.get("average"))
+                    minimumHeartRate = float(statistic.get("minimum"))
+                    maximumHeartRate = float(statistic.get("maximum"))
+                    heartRateUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierStepCount":
+                    stepCount = float(statistic.get("sum"))
+                    stepCountUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierGroundContactTime":
+                    minimumGroundContactTime = float(statistic.get("minimum"))
+                    maximumGroundContactTime = float(statistic.get("maximum"))
+                    averageGroundContactTime = float(statistic.get("average"))
+                    groundContactTimeUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierRunningPower":
+                    minimumRunningPower = float(statistic.get("minimum"))
+                    maximumRunningPower = float(statistic.get("maximum"))
+                    averageRunningPower = float(statistic.get("average"))
+                    runningPowerUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierRunningVerticalOscillation":
+                    minimumRunningVerticalOscillation = float(
+                        statistic.get("minimum"))
+                    maximumRunningVerticalOscillation = float(
+                        statistic.get("maximum"))
+                    averageRunningVerticalOscillation = float(
+                        statistic.get("average"))
+                    runningVerticalOscillationUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierRunningSpeed":
+                    minimumRunningSpeed = float(statistic.get("minimum"))
+                    maximumRunningSpeed = float(statistic.get("maximum"))
+                    averageRunningSpeed = float(statistic.get("average"))
+                    runningSpeedUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierRunningStrideLength":
+                    minimumRunningStrideLength = float(
+                        statistic.get("minimum"))
+                    maximumRunningStrideLength = float(
+                        statistic.get("maximum"))
+                    averageRunningStrideLength = float(
+                        statistic.get("average"))
+                    runningStrideLengthUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierDistanceSwimming":
+                    distanceSwimming = float(statistic.get("sum"))
+                    distanceSwimmingUnit = statistic.get("unit")
+
+                case "HKQuantityTypeIdentifierSwimmingStrokeCount":
+                    swimmingStrokeCount = float(statistic.get("sum"))
+                    swimmingStrokeCountUnit = statistic.get("unit")
+
+        return (
+            activeEnergyBurned,
+            activeEnergyBurnedUnit,
+            distanceWalkingRunning,
+            distanceWalkingRunningUnit,
+            basalEnergyBurned,
+            basalEnergyBurnedUnit,
+            minimumHeartRate,
+            maximumHeartRate,
+            averageHeartRate,
+            heartRateUnit,
+            stepCount,
+            stepCountUnit,
+            minimumGroundContactTime,
+            maximumGroundContactTime,
+            averageGroundContactTime,
+            groundContactTimeUnit,
+            minimumRunningPower,
+            maximumRunningPower,
+            averageRunningPower,
+            runningPowerUnit,
+            minimumRunningVerticalOscillation,
+            maximumRunningVerticalOscillation,
+            averageRunningVerticalOscillation,
+            runningVerticalOscillationUnit,
+            minimumRunningSpeed,
+            maximumRunningSpeed,
+            averageRunningSpeed,
+            runningSpeedUnit,
+            minimumRunningStrideLength,
+            maximumRunningStrideLength,
+            averageRunningStrideLength,
+            runningStrideLengthUnit,
+            distanceSwimming,
+            distanceSwimmingUnit,
+            swimmingStrokeCount,
+            swimmingStrokeCountUnit
+        )
+
+    def csv_row_structure(self) -> tuple:
+        return self._get_workout_record_data() + self._get_workout_statistics(self.workout_statistics) + self._get_workout_metadata(self.metadata_entries) + self._get_workout_file_reference()
+
+
+
+
