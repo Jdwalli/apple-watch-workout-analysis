@@ -16,6 +16,7 @@ from utils import name_utils as name_utils
 
 
 class HealthRecordParser:
+
     DEFAULT_HEALTH_RECORD_COLUMNS = [
         "type",
         "unit",
@@ -40,7 +41,13 @@ class HealthRecordParser:
         "heartRateMotionContext"
     ]
 
-
+    @staticmethod
+    def get_column_type(record_type: str):
+        match record_type:
+            case "HeartRate":
+                return HealthRecordParser.HEART_RATE_RECORD_COLUMNS
+            case _:
+                return HealthRecordParser.DEFAULT_HEALTH_RECORD_COLUMNS
 
     def __init__(self, record:  ET.Element):
         """Initializes the HealthRecordParser with an XML record element.
@@ -51,7 +58,7 @@ class HealthRecordParser:
         self.record = record
         self.record_type = name_utils.remove_record_type_prefix(
             self.record.get("type"))
-        
+
         self.record_unit = self.record.get("unit")
         self.record_value = self.record.get("value")
         self.record_source_name = self.record.get("sourceName")
