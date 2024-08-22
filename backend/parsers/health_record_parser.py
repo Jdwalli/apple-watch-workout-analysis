@@ -28,6 +28,7 @@ class HealthRecordParser:
         "startDate",
         "endDate"
     ]
+    
     HEART_RATE_RECORD_COLUMNS = [
         "type",
         "unit",

@@ -86,11 +86,7 @@ class WorkoutRouteParser:
 
     def _to_csv_row_structure(self, track_point: ET.Element) -> tuple:
         """Constructs a tuple representing the CSV row structure for a given track point.
-
         The units of the elements can be found at https://www.topografix.com/GPX/1/1/gpx.xsd
-
-
-
 
         Args:
             track_point: An XML element representing a track point ('trkpt')
@@ -227,6 +223,28 @@ class WorkoutRecordParser:
         self.workout_events = self.workout_record.findall('WorkoutEvent')
 
     def _get_workout_record_data(self) -> tuple:
+        """Extracts data recorded for each workout element.
+
+        This method extracts all relevant data collected during the workout
+        according to the XML schema:
+
+            <!ATTLIST Workout
+            workoutActivityType   CDATA #REQUIRED
+            duration              CDATA #IMPLIED
+            durationUnit          CDATA #IMPLIED
+            totalDistance         CDATA #IMPLIED
+            totalDistanceUnit     CDATA #IMPLIED
+            totalEnergyBurned     CDATA #IMPLIED
+            totalEnergyBurnedUnit CDATA #IMPLIED
+            sourceName            CDATA #REQUIRED
+            sourceVersion         CDATA #IMPLIED
+            device                CDATA #IMPLIED
+            creationDate          CDATA #IMPLIED
+            startDate             CDATA #REQUIRED
+            endDate               CDATA #REQUIRED
+            >
+        """
+
         return (
             self.workout_record.get("workoutActivityType"),
             self.workout_record.get("duration"),
@@ -240,6 +258,15 @@ class WorkoutRecordParser:
         )
 
     def _get_workout_file_reference(self) -> tuple:
+        """Extracts file reference recorded for a workout element if present.
+
+        This method extracts the file reference if it exist on the workout element:
+
+            <!ELEMENT FileReference EMPTY>
+            <!ATTLIST FileReference
+            path CDATA #REQUIRED
+            >
+        """
         file_path = ""
         if self.workout_route:
             file_reference = self.workout_route.find('FileReference')
@@ -326,6 +353,22 @@ class WorkoutRecordParser:
         )
 
     def _get_workout_statistics(self, workout_statistics: List[ET.Element]):
+        """Extracts statistics recorded for each workout element.
+
+        This method extracts all relevant data collected during the workout
+        according to the XML schema:
+            <!ELEMENT WorkoutStatistics EMPTY>
+            <!ATTLIST WorkoutStatistics
+            type                 CDATA #REQUIRED
+            startDate            CDATA #REQUIRED
+            endDate              CDATA #REQUIRED
+            average              CDATA #IMPLIED
+            minimum              CDATA #IMPLIED
+            maximum              CDATA #IMPLIED
+            sum                  CDATA #IMPLIED
+            unit                 CDATA #IMPLIED
+            >
+        """
         activeEnergyBurned = ""
         activeEnergyBurnedUnit = ""
         distanceWalkingRunning = ""
@@ -471,4 +514,9 @@ class WorkoutRecordParser:
         )
 
     def csv_row_structure(self) -> tuple:
+        """Returns the combined CSV row structure for the workout. 
+
+        Returns:
+            A tuple representing the CSV row structure for the workout.
+        """
         return self._get_workout_record_data() + self._get_workout_statistics(self.workout_statistics) + self._get_workout_metadata(self.metadata_entries) + self._get_workout_file_reference()

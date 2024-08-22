@@ -63,7 +63,7 @@ class ActivitySummaryParser:
                 f"The ActivitySummaryParser can only parse ActivitySummary tags. This object's tag is: '{self.activity_summary.tag}'")
 
     def csv_row_structure(self) -> tuple:
-        """Returns the CSV row structure for the activity summary 
+        """Returns the CSV row structure for the activity summary. 
 
         Returns:
             A tuple representing the CSV row structure for the activity summary.
