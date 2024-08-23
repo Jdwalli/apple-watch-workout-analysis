@@ -42,7 +42,7 @@ def remove_category_type_prefix(input: str) -> str:
 
 def remove_record_type_prefix(input: str) -> str:
     """Removes either the quantity type identifier prefix or the category type identifier prefix from the input."""
-    regex_string = f"{AppleHealthPrefix.QUANTITY_TYPE_IDENTIFIER.value}|{AppleHealthPrefix.CATEGORY_TYPE_IDENTIFIER.value}"
+    regex_string = f"{AppleHealthPrefix.QUANTITY_TYPE_IDENTIFIER.value}|{AppleHealthPrefix.CATEGORY_TYPE_IDENTIFIER.value}|{AppleHealthPrefix.HEALTH_KIT_DATA_TYPE.value}"
     pattern = r"^(" + regex_string + r")?"
     return re.sub(pattern, "", input)
 

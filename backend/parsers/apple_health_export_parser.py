@@ -4,7 +4,9 @@ from zipfile import ZipFile
 import os
 import pandas as pd
 import config
+
 from utils import name_utils as name_utils
+from utils import file_utils as file_utils
 
 from parsers.activity_summary_parser import ActivitySummaryParser
 from parsers.workout_record_parser import WorkoutRouteParser, WorkoutRecordParser
@@ -52,7 +54,7 @@ class AppleHealthExportParser:
 
     def _parse_activity_summary_elements(self) -> None:
         activity_summary_path = os.path.join(
-            config.HEALTH_ELEMENTS_DIRECTORY, config.ACTIVITY_SUMMARY_FILE_NAME)
+            config.HEALTH_ELEMENTS_ACTIVITY_DIRECTORY, config.ACTIVITY_SUMMARY_FILE_NAME)
         self.activity_summaries = self.export_root.findall("ActivitySummary")
         parsed_activity_summaries = [
             ActivitySummaryParser(activity_summary).csv_row_structure()
@@ -80,7 +82,7 @@ class AppleHealthExportParser:
     def _parse_health_record_elements(self) -> None:
         self.records = self.export_root.findall('Record')
         records_data = {name_utils.remove_record_type_prefix(
-            record.get("type")): [] for record in self.records}
+            record.get("type")): [] for record in self.records if record.get('device') != "Health"}
 
         for record in self.records:
             current_record = HealthRecordParser(record)
@@ -93,7 +95,7 @@ class AppleHealthExportParser:
             records_data[record] = pd.DataFrame(
                 records_data[record], columns=HealthRecordParser.get_column_type(record))
             df = pd.DataFrame.from_dict(records_data[record])
-            df.to_csv(os.path.join(config.HEALTH_ELEMENTS_DIRECTORY,
+            df.to_csv(os.path.join(file_utils.match_record_type_to_directory(record),
                       f"{record}.csv"), index=False, header=True)
 
     def _parse_gpx_files(self) -> None:

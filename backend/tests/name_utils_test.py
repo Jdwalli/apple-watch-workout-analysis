@@ -95,6 +95,10 @@ class TestNameUtils(unittest.TestCase):
         result = name_utils.remove_record_type_prefix(input_value)
         expected = "SleepAnalysis"
         self.assertEqual(result, expected)
+        input_value = "HKDataTypeSleepDurationGoal"
+        result = name_utils.remove_record_type_prefix(input_value)
+        expected = "SleepDurationGoal"
+        self.assertEqual(result, expected)
 
 
 if __name__ == '__main__':
