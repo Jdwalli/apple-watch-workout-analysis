@@ -57,7 +57,7 @@ class HealthRecordParser:
         self.record_value = self.record.get("value")
         self.record_source_name = self.record.get("sourceName")
         self.record_source_version = self.record.get("sourceVersion")
-        self.record_device = self.record.get("device")
+        self.record_device = name_utils.extract_device_name(self.record.get("device"))
         self.record_creation_date = self.record.get("creationDate")
         self.record_start_date = self.record.get("startDate")
         self.record_end_date = self.record.get("endDate")

@@ -27,7 +27,6 @@ class AppleHealthExportParser:
             self.export_file_path, "electrocardiograms")
 
         self._validate_apple_health_export()
-        self.export_root = self._generate_root()
 
     def _validate_apple_health_export(self):
         """Validates whether the provided file is a valid Apple Health export.
@@ -44,61 +43,93 @@ class AppleHealthExportParser:
         # TODO IMPLEMENT
         return True
 
-    def _generate_root(self) -> ET.Element:
-        try:
-            return ET.fromstring(self.zipFile.read(self.health_export_file_path))
-        except Exception as e:
-            raise RuntimeError(
-                f"Exception occurred when trying to parse the tree root: {e}"
-            ) from e
-
     def _parse_activity_summary_elements(self) -> None:
+        """Parses activity summary elements from the Apple Health export XML and writes them to a CSV file.
+
+        This method opens the Apple Health export XML file within the ZIP archive, then iteratively parses
+        the XML to find and process each 'ActivitySummary' element. Each parsed element is converted into
+        a CSV-compatible row structure using the ActivitySummaryParser. The method accumulates these
+        row structures into a list and, once all elements have been processed, writes the list to a CSV
+        file at the specified path.
+        """
+
         activity_summary_path = os.path.join(
             config.HEALTH_ELEMENTS_ACTIVITY_DIRECTORY, config.ACTIVITY_SUMMARY_FILE_NAME)
-        self.activity_summaries = self.export_root.findall("ActivitySummary")
-        parsed_activity_summaries = [
-            ActivitySummaryParser(activity_summary).csv_row_structure()
-            for activity_summary in self.activity_summaries
-        ]
+        parsed_activity_summaries = []
+
+        with self.zipFile.open(self.health_export_file_path) as xml_file:
+            for _, elem in ET.iterparse(xml_file, events=("end",)):
+                if elem.tag == "ActivitySummary":
+                    parsed_activity_summaries.append(
+                        ActivitySummaryParser(elem).csv_row_structure()
+                    )
+                    elem.clear()
 
         df = pd.DataFrame(parsed_activity_summaries,
                           columns=ActivitySummaryParser.ACTIVITY_SUMMARY_COLUMNS)
         df.to_csv(activity_summary_path, index=False, header=True)
 
     def _parse_workout_elements(self) -> None:
+        """Parses workout elements from the Apple Health export XML and writes them to a CSV file.
+
+        This method opens the Apple Health export XML file within the ZIP archive, then iteratively parses
+        the XML to find and process each 'Workout' element. Each parsed element is converted into
+        a CSV-compatible row structure using the WorkoutRecordParser. The method accumulates these
+        row structures into a list and, once all elements have been processed, writes the list to a CSV
+        file at the specified path.
+        """
         parsed_workout_path = os.path.join(
             config.WORKOUT_ELEMENTS_DIRECTORY, config.WORKOUTS_SUMMARY_FILE_NAME)
-        self.workouts = self.export_root.findall('Workout')
+        parsed_workouts = []
 
-        parsed_workouts = [
-            list(WorkoutRecordParser(workout).csv_row_structure())
-            for workout in self.workouts
-        ]
+        with self.zipFile.open(self.health_export_file_path) as xml_file:
+            for event, elem in ET.iterparse(xml_file, events=("end",)):
+                if elem.tag == 'Workout':
+                    parsed_workouts.append(
+                        list(WorkoutRecordParser(elem).csv_row_structure())
+                    )
+                    elem.clear()
 
         df = pd.DataFrame(
             parsed_workouts, columns=WorkoutRecordParser.MASTER_WORKOUT_COLUMNS)
         df.to_csv(parsed_workout_path, index=False, header=True)
 
     def _parse_health_record_elements(self) -> None:
-        self.records = self.export_root.findall('Record')
-        records_data = {name_utils.remove_record_type_prefix(
-            record.get("type")): [] for record in self.records if record.get('device') != "Health"}
+        """Parses health record elements from the Apple Health export XML and writes them to a CSV file.
 
-        for record in self.records:
-            current_record = HealthRecordParser(record)
-            record_type = current_record.record_type
-            record_data = current_record.csv_row_structure()
+        This method opens the Apple Health export XML file within the ZIP archive, then iteratively parses
+        the XML to find and process each 'Record' element. Each parsed element is converted into
+        a CSV-compatible row structure using the HealthRecordParser. The method accumulates these
+        row structures into a list and, once all elements have been processed, writes the list to a CSV
+        file at the specified path.
+        """
+        records_data = {}
 
-            records_data[record_type].append(record_data)
+        with self.zipFile.open(self.health_export_file_path) as xml_file:
+            for event, elem in ET.iterparse(xml_file, events=("end",)):
+                if elem.tag == 'Record':
+                    if elem.get('sourceName') != "Health":
+                        record_type = name_utils.remove_record_type_prefix(
+                            elem.get("type")
+                        )
+                        if record_type not in records_data:
+                            records_data[record_type] = []
 
-        for record in records_data:
-            records_data[record] = pd.DataFrame(
-                records_data[record], columns=HealthRecordParser.get_column_type(record))
-            df = pd.DataFrame.from_dict(records_data[record])
-            df.to_csv(os.path.join(file_utils.match_record_type_to_directory(record),
-                      f"{record}.csv"), index=False, header=True)
+                        current_record = HealthRecordParser(elem)
+                        records_data[record_type].append(
+                            current_record.csv_row_structure()
+                        )
+                    elem.clear()
+
+        for record_type, record_list in records_data.items():
+            df = pd.DataFrame(
+                record_list, columns=HealthRecordParser.get_column_type(record_type))
+            df.to_csv(os.path.join(file_utils.match_record_type_to_directory(record_type),
+                      f"{record_type}.csv"), index=False, header=True)
 
     def _parse_gpx_files(self) -> None:
+        """Parses gpx files from the Apple Health export zip and writes them to a CSV file.
+        """
         gpx_file_paths = [
             file.filename
             for file in self.zipFile.infolist()
@@ -107,10 +138,9 @@ class AppleHealthExportParser:
 
         for gpx_file_path in gpx_file_paths:
             ns = {"gpx": "http://www.topografix.com/GPX/1/1"}
-            tracks = ET.fromstring(self.zipFile.read(
-                gpx_file_path)).findall('gpx:trk', ns)
-
-            df = WorkoutRouteParser(tracks).to_dataframe()
+            with self.zipFile.open(gpx_file_path) as gpx_file:
+                tracks = ET.parse(gpx_file).getroot().findall('gpx:trk', ns)
+                df = WorkoutRouteParser(tracks).to_dataframe()
 
             filename_without_extension, _ = os.path.splitext(
                 os.path.basename(gpx_file_path))
