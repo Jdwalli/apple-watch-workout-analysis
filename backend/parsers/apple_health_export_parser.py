@@ -17,6 +17,7 @@ class AppleHealthExportParser:
     def __init__(self, export_file: FileStorage):
         self.export_file = export_file
         self.export_file_path = "apple_health_export/"
+
         self.zipFile = ZipFile(self.export_file, "r")
 
         self.health_export_file_path = os.path.join(
@@ -25,7 +26,7 @@ class AppleHealthExportParser:
             self.export_file_path, "workout-routes")
         self.electrocardiograms_directory_path = os.path.join(
             self.export_file_path, "electrocardiograms")
-
+        
         self._validate_apple_health_export()
 
     def _validate_apple_health_export(self):
@@ -39,9 +40,22 @@ class AppleHealthExportParser:
         Raises:
             ValueError: If the file does not meet the criteria for an Apple Health export.
         """
+       
+        try:
+            export_files = self.zipFile.namelist()
+            required_files_and_directories = [
+                self.health_export_file_path,
+                self.workout_routes_directory_path
+            ]
 
-        # TODO IMPLEMENT
-        return True
+            for required in required_files_and_directories:
+                if not any(file.startswith(required) for file in export_files):
+                    raise ValueError(
+                        f"Invalid Apple Health export: '{required}' not found in the archive.")
+
+        except KeyError as e:
+            raise ValueError(
+                f"Invalid Apple Health export: '{self.export_file_path}' not found in the archive.") from e
 
     def _parse_activity_summary_elements(self) -> None:
         """Parses activity summary elements from the Apple Health export XML and writes them to a CSV file.
