@@ -6,7 +6,7 @@ def extract_device_name(raw_device_name: str) -> str:
     """Extracts device name using regex from a given string."""
     if raw_device_name:
         pattern = r"name:([^,]+)"
-        return match[1] if (match := re.search(pattern, raw_device_name)) else ''
+        return match[1] if (match := re.search(pattern, raw_device_name)) else 'Unknown Device Name'
     return 'Unknown Device Name'
 
 
