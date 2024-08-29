@@ -107,7 +107,7 @@ class WorkoutDetailsResponse:
 class RequestedWorkoutResponse:
     def __init__(self, workout_start_date: str):
         self.workout_start_date = workout_start_date
-        self.workout_csv = workout_handler.load_workout_csv()  # Works
+        self.workout_csv = workout_handler.load_workout_csv()
         self.workout_data = workout_handler.get_workouts_from_date(
             self.workout_csv, self.workout_start_date)
 
@@ -218,16 +218,7 @@ class RequestedWorkoutResponse:
                         "swolfScore": workout['swolfScore'],
                         "waterSalinity": workout['waterSalinity']
                     },
-                    "workoutRoute": {
-                        'longitude': [],
-                        'latitude': [],
-                        'elevation': [],
-                        'time': [],
-                        'speed': [],
-                        'course': [],
-                        'hAcc': [],
-                        'vAcc': []
-                    },
+                    "workoutRoute": workout_handler.get_workout_gpx_data(workout["FileReference"]),
                     "workoutVitals": {
                         "heartRate": {
                             "chart": record_handler.load_record_into_chart_data("HeartRate", workout["startDate"], workout["endDate"]),

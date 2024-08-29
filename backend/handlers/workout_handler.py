@@ -5,7 +5,7 @@ import config
 import os
 from typing import List
 
-from record_handler import load_record
+from handlers.record_handler import load_record
 
 
 def load_workout_csv():
@@ -36,24 +36,27 @@ def get_workouts_from_date(dataframe: pd.DataFrame, workout_start_date: str) -> 
     workout_start_date = pd.to_datetime(workout_start_date)
 
     match: pd.DataFrame = dataframe[
-        (dataframe["date"] == pd.to_datetime(workout_start_date))
+        (dataframe["date"] == pd.to_datetime(workout_start_date).date())
     ]
     del match['date']
 
     return None if match.empty else match.to_dict(orient='records')
 
-def get_workout_gpx_data(workout_gpx_path: str):
-    df = load_record()
-    # replace gpx with csv /workout-routes/route_2024-03-28_12.54am.gpx
 
+def get_workout_gpx_data(workout_file_reference: str):
+    gpx_file_path = file_utils.format_workout_reference_into_path(
+        workout_file_reference)
 
-    {
-                        'longitude': [],
-                        'latitude': [],
-                        'elevation': [],
-                        'time': [],
-                        'speed': [],
-                        'course': [],
-                        'hAcc': [],
-                        'vAcc': []
-                    }
+    if file_utils.file_exists(gpx_file_path):
+        df = pd.read_csv(gpx_file_path)
+        return {
+            'longitude': df['lon'].to_list(),
+            'latitude': df['lat'].to_list(),
+            'elevation': df['elevation'].to_list(),
+            'time': df['time'].to_list(),
+            'speed': df['speed'].to_list(),
+            'course': df['course'].to_list(),
+            'hAcc': df['hAcc'].to_list(),
+            'vAcc': df['vAcc'].to_list()
+        }
+    return {}

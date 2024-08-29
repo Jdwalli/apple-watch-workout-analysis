@@ -40,3 +40,7 @@ def match_record_type_to_directory(record_name: str) -> str:
 
     print(f"{record_name} does not belong to a group!")
     return config.HEALTH_ELEMENTS_DIRECTORY
+
+def format_workout_reference_into_path(gpx_path: str) -> str:
+    gpx_path = gpx_path.replace("gpx", "csv")
+    return config.WORKOUT_ELEMENTS_DIRECTORY + gpx_path

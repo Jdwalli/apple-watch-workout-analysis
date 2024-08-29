@@ -70,5 +70,5 @@ def send_requested_workout():
 if __name__ == "__main__":
     # create_health_export_directories()
     # app.run(debug=True)
-    response_builder = RequestedWorkoutResponse("2024-03-24")
+    response_builder = RequestedWorkoutResponse("2024-02-20")
     print(response_builder.get_response())
