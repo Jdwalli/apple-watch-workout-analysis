@@ -5,24 +5,20 @@ import config
 import os
 from typing import List
 
-from handlers.record_handler import load_record
-
-
-def load_workout_csv():
+def load_workout_records_into_dataframe() -> pd.DataFrame:
     workout_csv_path = os.path.join(config.WORKOUT_ELEMENTS_DIRECTORY,
                                     config.WORKOUTS_SUMMARY_FILE_NAME)
     if file_utils.file_exists(workout_csv_path):
         return pd.read_csv(workout_csv_path)
-    return None
+    return pd.DataFrame()
 
 
-def get_workouts_from_date(dataframe: pd.DataFrame, workout_start_date: str) -> List:
+def load_workout_records_from_date(dataframe: pd.DataFrame, workout_start_date: str) -> List:
     """
     Retrieve workout data based on workout type and start date.
 
     Args:
         dataframe (pd.DataFrame): DataFrame containing workout data.
-        workout_type (str): Type of the workout.
         workout_start_date (str): Start date of the workout.
 
     Returns:
@@ -43,7 +39,7 @@ def get_workouts_from_date(dataframe: pd.DataFrame, workout_start_date: str) -> 
     return None if match.empty else match.to_dict(orient='records')
 
 
-def get_workout_gpx_data(workout_file_reference: str):
+def load_workout_record_gpx_data(workout_file_reference: str):
     gpx_file_path = file_utils.format_workout_reference_into_path(
         workout_file_reference)
 

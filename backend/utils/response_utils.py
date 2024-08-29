@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask import Response
-from handlers import record_handler as record_handler
-from handlers import workout_handler as workout_handler
+from handlers import health_record_handler as health_record_handler
+from handlers import workout_record_handler as workout_record_handler
 
 
 class UploadResponse:
@@ -105,136 +105,164 @@ class WorkoutDetailsResponse:
 
 
 class RequestedWorkoutResponse:
-    def __init__(self, workout_start_date: str):
-        self.workout_start_date = workout_start_date
-        self.workout_csv = workout_handler.load_workout_csv()
-        self.workout_data = workout_handler.get_workouts_from_date(
-            self.workout_csv, self.workout_start_date)
+    def __init__(self):
+        self.workout_csv = None
+        self.workout_data = None 
 
         self.response = {
             "workoutContext": {
-                "requestedDate": workout_start_date,
-                "workouts": []
+                "statusCode": 200,
+                "requestedDate": "",
+                "workouts": [],
+                "errors": []
             },
         }
 
-        self._build_response()
 
     def _build_response(self):
         for workout in self.workout_data:
-            self.response["workoutContext"]["workouts"].append(
-                {
-                    "workoutName": workout["workoutActivityType"],
-                    "workoutDuration": workout["duration"],
-                    "workoutDurationUnit": workout["durationUnit"],
-                    "workoutTotalDistance": workout["distanceWalkingRunning"],
-                    "workoutTotalDistanceUnit": workout["distanceWalkingRunningUnit"],
-                    "workoutTotalEnergyBurned": workout["activeEnergyBurned"],
-                    "workoutTotalEnergyBurnedUnit": workout["activeEnergyBurnedUnit"],
-                    "workoutCreationDate": workout["creationDate"],
-                    "workoutStartDate": workout["startDate"],
-                    "workoutEndDate": workout["endDate"],
-                    "workoutStatistics": {
-                        "heartRate": {
-                            "average": workout["averageHeartRate"],
-                            "minimum": workout["minimumHeartRate"],
-                            "maximum": workout["maximumGroundContactTime"],
-                            "unit": workout["heartRateUnit"],
-                        },
-                        "activeEnergyBurned": {
-                              "sum": workout['activeEnergyBurned'],
-                              "unit": workout['activeEnergyBurnedUnit']
-                        },
-                        "basalEnergyBurned": {
-                            "sum": workout['basalEnergyBurned'],
-                            "unit": workout['basalEnergyBurnedUnit']
-                        },
-                        "distanceWalkingRunning": {
-                            "sum": workout['distanceWalkingRunning'],
-                            "unit": workout['distanceWalkingRunningUnit']
-                        },
-                        "stepCount": {
-                            "sum": workout['stepCount'],
-                            "unit": workout['stepCountUnit']
-                        },
-                        "runningGroundContactTime": {
-                            "average": workout["averageGroundContactTime"],
-                            "minimum": workout["minimumGroundContactTime"],
-                            "maximum": workout["maximumGroundContactTime"],
-                            "unit": workout["groundContactTimeUnit"],
-                            "chart": record_handler.load_record_into_chart_data("RunningGroundContactTime", workout["startDate"], workout["endDate"])
-                        },
-                        "runningPower": {
-                            "average": workout['averageRunningPower'],
-                            "minimum": workout['minimumRunningPower'],
-                            "maximum": workout['maximumRunningPower'],
-                            "unit": workout['runningPowerUnit'],
-                            "chart": record_handler.load_record_into_chart_data("RunningPower", workout["startDate"], workout["endDate"])
-                        },
-                        "runningVerticalOscillation": {
-                            "average": workout['averageRunningVerticalOscillation'],
-                            "minimum": workout['minimumRunningVerticalOscillation'],
-                            "maximum": workout['maximumRunningVerticalOscillation'],
-                            "unit": workout['runningVerticalOscillationUnit'],
-                            "chart": record_handler.load_record_into_chart_data("RunningVerticalOscillation", workout["startDate"], workout["endDate"])
-                        },
-                        "runningSpeed": {
-                            "average": workout['averageRunningSpeed'],
-                            "minimum": workout['minimumRunningSpeed'],
-                            "maximum": workout['maximumRunningSpeed'],
-                            "unit": workout['runningSpeedUnit'],
-                            "chart": record_handler.load_record_into_chart_data("RunningSpeed", workout["startDate"], workout["endDate"])
-                        },
-                        "runningStrideLength": {
-                            "average": workout['averageRunningStrideLength'],
-                            "minimum": workout['minimumRunningStrideLength'],
-                            "maximum": workout['maximumRunningStrideLength'],
-                            "unit": workout['runningStrideLengthUnit'],
-                            "chart": record_handler.load_record_into_chart_data("RunningStrideLength", workout["startDate"], workout["endDate"])
-                        },
-                        "distanceSwimming": {
-                            "sum": workout['distanceSwimming'],
-                            "unit": workout['distanceSwimmingUnit'],
-                        },
-                        "swimmingStrokeCount": {
-                            "sum": workout['swimmingStrokeCount'],
-                            "unit": workout['swimmingStrokeCountUnit'],
-                        }
-                    },
-                    "workoutMetadata": {
-                        "workoutLocationType": workout["indoorWorkout"],
-                        "averageMETs": workout["averageMETs"],
-                        "weatherTemperature": workout["temperature"],
-                        "weatherHumidity": workout["humidity"],
-                        "timeZone": workout["timeZone"],
-                        "maximumSpeed": workout['maximumSpeed'],
-                        "averageSpeed": workout['averageSpeed'],
-                        "physicalEffortEstimationType": workout["physicalEffortEstimationType"],
-                        "elevationAscended": workout['elevationAscended'],
-                        "elevationDescended": workout["elevationDescended"],
-                        "swimmingLocationType": workout["swimmingLocationType"],
-                        "swimmingStrokeStyle": workout["swimmingStrokeStyle"],
-                        "lapLength": workout['lapLength'],
-                        "swolfScore": workout['swolfScore'],
-                        "waterSalinity": workout['waterSalinity']
-                    },
-                    "workoutRoute": workout_handler.get_workout_gpx_data(workout["FileReference"]),
-                    "workoutVitals": {
-                        "heartRate": {
-                            "chart": record_handler.load_record_into_chart_data("HeartRate", workout["startDate"], workout["endDate"]),
-                            "unit": workout['heartRateUnit']
-                    }
-                }
-                }
-            )
+            workout_stats = self._build_workout_stats(workout)
+            self.response["workoutContext"]["workouts"].append(workout_stats)
 
+    def _build_workout_stats(self, workout):
+        return {
+            "workoutName": workout["workoutActivityType"],
+            "workoutDuration": workout["duration"],
+            "workoutDurationUnit": workout["durationUnit"],
+            "workoutTotalDistance": workout["distanceWalkingRunning"],
+            "workoutTotalDistanceUnit": workout["distanceWalkingRunningUnit"],
+            "workoutTotalEnergyBurned": workout["activeEnergyBurned"],
+            "workoutTotalEnergyBurnedUnit": workout["activeEnergyBurnedUnit"],
+            "workoutCreationDate": workout["creationDate"],
+            "workoutStartDate": workout["startDate"],
+            "workoutEndDate": workout["endDate"],
+            "workoutStatistics": self._get_workout_statistics(workout),
+            "workoutMetadata": self._get_workout_metadata(workout),
+            "workoutRoute": workout_record_handler.load_workout_record_gpx_data(workout["FileReference"]),
+            "workoutVitals": self._get_workout_vitals(workout),
+        }
 
+    def _get_workout_metadata(self, workout):
+        return {
+            "workoutLocationType": workout["indoorWorkout"],
+            "averageMETs": workout["averageMETs"],
+            "weatherTemperature": workout["temperature"],
+            "weatherHumidity": workout["humidity"],
+            "timeZone": workout["timeZone"],
+            "maximumSpeed": workout['maximumSpeed'],
+            "averageSpeed": workout['averageSpeed'],
+            "physicalEffortEstimationType": workout["physicalEffortEstimationType"],
+            "elevationAscended": workout['elevationAscended'],
+            "elevationDescended": workout["elevationDescended"],
+            "swimmingLocationType": workout["swimmingLocationType"],
+            "swimmingStrokeStyle": workout["swimmingStrokeStyle"],
+            "lapLength": workout['lapLength'],
+            "swolfScore": workout['swolfScore'],
+            "waterSalinity": workout['waterSalinity']
+        }
 
+    def _get_workout_vitals(self, workout):
+        return {
+            "heartRate": {
+                "chart": health_record_handler.load_health_record_into_chart_format("HeartRate", workout["startDate"], workout["endDate"]),
+                "unit": workout['heartRateUnit']
+            }
+        }
 
+    def _get_workout_statistics(self, workout):
+        return {
+            "heartRate": {
+                "average": workout["averageHeartRate"],
+                "minimum": workout["minimumHeartRate"],
+                "maximum": workout["maximumGroundContactTime"],
+                "unit": workout["heartRateUnit"],
+            },
+            "activeEnergyBurned": {
+                "sum": workout['activeEnergyBurned'],
+                "unit": workout['activeEnergyBurnedUnit']
+            },
+            "basalEnergyBurned": {
+                "sum": workout['basalEnergyBurned'],
+                "unit": workout['basalEnergyBurnedUnit']
+            },
+            "distanceWalkingRunning": {
+                "sum": workout['distanceWalkingRunning'],
+                "unit": workout['distanceWalkingRunningUnit']
+            },
+            "stepCount": {
+                "sum": workout['stepCount'],
+                "unit": workout['stepCountUnit']
+            },
+            "runningGroundContactTime": {
+                "average": workout["averageGroundContactTime"],
+                "minimum": workout["minimumGroundContactTime"],
+                "maximum": workout["maximumGroundContactTime"],
+                "unit": workout["groundContactTimeUnit"],
+                "chart": health_record_handler.load_health_record_into_chart_format("RunningGroundContactTime", workout["startDate"], workout["endDate"])
+            },
+            "runningPower": {
+                "average": workout['averageRunningPower'],
+                "minimum": workout['minimumRunningPower'],
+                "maximum": workout['maximumRunningPower'],
+                "unit": workout['runningPowerUnit'],
+                "chart": health_record_handler.load_health_record_into_chart_format("RunningPower", workout["startDate"], workout["endDate"])
+            },
+            "runningVerticalOscillation": {
+                "average": workout['averageRunningVerticalOscillation'],
+                "minimum": workout['minimumRunningVerticalOscillation'],
+                "maximum": workout['maximumRunningVerticalOscillation'],
+                "unit": workout['runningVerticalOscillationUnit'],
+                "chart": health_record_handler.load_health_record_into_chart_format("RunningVerticalOscillation", workout["startDate"], workout["endDate"])
+            },
+            "runningSpeed": {
+                "average": workout['averageRunningSpeed'],
+                "minimum": workout['minimumRunningSpeed'],
+                "maximum": workout['maximumRunningSpeed'],
+                "unit": workout['runningSpeedUnit'],
+                "chart": health_record_handler.load_health_record_into_chart_format("RunningSpeed", workout["startDate"], workout["endDate"])
+            },
+            "runningStrideLength": {
+                "average": workout['averageRunningStrideLength'],
+                "minimum": workout['minimumRunningStrideLength'],
+                "maximum": workout['maximumRunningStrideLength'],
+                "unit": workout['runningStrideLengthUnit'],
+                "chart": health_record_handler.load_health_record_into_chart_format("RunningStrideLength", workout["startDate"], workout["endDate"])
+            },
+            "distanceSwimming": {
+                "sum": workout['distanceSwimming'],
+                "unit": workout['distanceSwimmingUnit'],
+            },
+            "swimmingStrokeCount": {
+                "sum": workout['swimmingStrokeCount'],
+                "unit": workout['swimmingStrokeCountUnit'],
+            }
+        }
+    
+    def set_status_code(self, code: int):
+        """Sets the status code in the response.
+
+        Args:
+            code (int): The HTTP status code to set.
+        """
+        self.response["workoutContext"]["statusCode"] = code
 
     def add_error(self, error_code: int, error_message: int):
-        pass
+        error = {
+            "errorCode": error_code,
+            "errorMessage": error_message
+        }
+        self.response["workoutContext"]["errors"].append(error)
 
+    def generate_response(self, workout_start_date: str):
+        self.response['workoutContext']['requestedDate'] = workout_start_date
+
+
+        self.workout_csv = workout_record_handler.load_workout_records_into_dataframe()
+        self.workout_data = workout_record_handler.load_workout_records_from_date(
+            self.workout_csv, workout_start_date)
+
+        self._build_response()
+    
     def get_response(self) -> Response:
         """Generates the Flask response object.
 
@@ -242,5 +270,5 @@ class RequestedWorkoutResponse:
             Response: The Flask response object with the JSON-encoded response data
                       and the appropriate HTTP status code.
         """
-        # return jsonify(self.response), 200
-        return self.response
+
+        return jsonify(self.response), self.response["workoutContext"]["statusCode"]

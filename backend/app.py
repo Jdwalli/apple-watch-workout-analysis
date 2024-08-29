@@ -47,8 +47,16 @@ def upload_export_file():
 
 @app.route("/api/workout-details", methods=["GET"])
 def send_all_workout_details():
+    response_builder = WorkoutDetailsResponse()
+    return NotImplementedError
+
+@app.route("/api/workout", methods=["POST"])
+def send_requested_workout():
+    response_builder = RequestedWorkoutResponse()
     try:
-        response_builder = WorkoutDetailsResponse()
+        post_data = request.get_json()
+        response_builder.generate_response(post_data['workout_start_date'])
+
     except ValueError as ve:
         response_builder.set_status_code(400)
         response_builder.add_error(400, str(ve))
@@ -60,15 +68,6 @@ def send_all_workout_details():
     return response_builder.get_response()
 
 
-@app.route("/api/workout", methods=["POST"])
-def send_requested_workout():
-    post_data = request.get_json()
-    response_builder = RequestedWorkoutResponse()
-    return NotImplementedError
-
-
 if __name__ == "__main__":
-    # create_health_export_directories()
-    # app.run(debug=True)
-    response_builder = RequestedWorkoutResponse("2024-02-20")
-    print(response_builder.get_response())
+    create_health_export_directories()
+    app.run(debug=True)
