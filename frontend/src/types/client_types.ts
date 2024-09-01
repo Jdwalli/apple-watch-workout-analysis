@@ -26,6 +26,10 @@ interface UploadContext {
 }
 
 
+export interface GetWorkoutsByDateParameters {
+  workoutStartDate: string;
+}
+
 // Workout Context Interface 
 export interface WorkoutMetadata {
   workoutLocationType: string;

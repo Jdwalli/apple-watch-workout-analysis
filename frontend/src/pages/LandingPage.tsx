@@ -3,7 +3,7 @@ import { FileDropzone } from "../components/common/FileDropzone";
 import { useNavigate } from "react-router-dom";
 import ApiClient from "../clients/api_client";
 import {
-  UploadError,
+  RequestError,
   UploadExportResponse,
   ApiResponse,
 } from "../types/client_types";
@@ -33,7 +33,7 @@ const LandingPage: React.FC<Props> = (props: Props) => {
         if (error.response && error.response.status === 400) {
           const { errors } = error.response.data.uploadContext;
           const errorMessages = errors
-            .map((e: UploadError) => `${e.errorMessage}`)
+            .map((e: RequestError) => `${e.errorMessage}`)
             .join("\n");
           alert(
             "Error(s) occurred when uploading the export:\n" + errorMessages

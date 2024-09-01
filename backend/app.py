@@ -55,11 +55,10 @@ def send_requested_workout():
     response_builder = RequestedWorkoutResponse()
     try:
         post_data = request.get_json()
-        response_builder.generate_response(post_data['workout_start_date'])
-
-    except ValueError as ve:
-        response_builder.set_status_code(400)
-        response_builder.add_error(400, str(ve))
+        response_builder.generate_response(post_data['workoutStartDate'])
+    except KeyError as ke:
+        response_builder.set_status_code(500)
+        response_builder.add_error(500, f"Internal Server Error: {str(ke)} is not a valid key.")
     except Exception as e:
         response_builder.set_status_code(500)
         response_builder.add_error(
