@@ -147,6 +147,13 @@ export interface ApiClientRequest {
     workouts: WorkoutStats[];
     errors: RequestError[];
   }
+
+  export interface WorkoutDetailsContext {
+    statusCode: number;
+    totalWorkouts: number;
+    workoutDates: string[]
+    errors: RequestError[];
+  }
   
   // API Responses
   
@@ -158,4 +165,8 @@ export interface ApiClientRequest {
   // /api/workout response
   export interface WorkoutResponse {
     workoutContext: WorkoutContext;
+  }
+
+  export interface WorkoutDetailsResponse {
+    workoutDetailsContext: WorkoutDetailsContext
   }
