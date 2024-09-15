@@ -48,7 +48,7 @@ def upload_export_file():
 @app.route("/api/workout-details", methods=["GET"])
 def send_all_workout_details():
     response_builder = WorkoutDetailsResponse()
-    return NotImplementedError
+    return response_builder.get_response()
 
 @app.route("/api/workout", methods=["POST"])
 def send_requested_workout():

@@ -96,18 +96,55 @@ class UploadResponse:
 class WorkoutDetailsResponse:
     def __init__(self):
         self.response = {
-            "workoutEventContext": {
+            "workoutDetailsContext": {
+                "statusCode": 200,
                 "totalWorkouts": 0,
-                "distinctWorkouts": [],
-                "workoutDateFreqMap": {}
+                "workoutDates": [],
+                "errors": []
             }
         }
+
+    def _build_response(self):
+        df = workout_record_handler.load_workout_records_into_dataframe()
+        self.response["workoutDetailsContext"]["totalWorkouts"] = len(df)
+        self.response["workoutDetailsContext"]["workoutDates"] = workout_record_handler.load_unique_workout_dates(
+            df)
+        
+    def set_status_code(self, code: int):
+        """Sets the status code in the response.
+
+        Args:
+            code (int): The HTTP status code to set.
+        """
+        self.response["workoutDetailsContext"]["statusCode"] = code
+
+
+    def add_error(self, error_code: int, error_message: int):
+        """Sets the upload start and end times in the response.
+
+        Args:
+        """
+        error = {
+            "errorCode": error_code,
+            "errorMessage": error_message
+        }
+        self.response["workoutDetailsContext"]["errors"].append(error)
+
+    def get_response(self) -> Response:
+        """Generates the Flask response object.
+
+        Returns:
+            Response: The Flask response object with the JSON-encoded response data
+                      and the appropriate HTTP status code.
+        """
+        self._build_response()
+        return jsonify(self.response), self.response["workoutDetailsContext"]["statusCode"]
 
 
 class RequestedWorkoutResponse:
     def __init__(self):
         self.workout_csv = None
-        self.workout_data = None 
+        self.workout_data = None
 
         self.response = {
             "workoutContext": {
@@ -117,7 +154,6 @@ class RequestedWorkoutResponse:
                 "errors": []
             },
         }
-
 
     def _build_response(self):
         for workout in self.workout_data:
@@ -237,7 +273,7 @@ class RequestedWorkoutResponse:
                 "unit": workout['swimmingStrokeCountUnit'],
             }
         }
-    
+
     def set_status_code(self, code: int):
         """Sets the status code in the response.
 
@@ -256,13 +292,12 @@ class RequestedWorkoutResponse:
     def generate_response(self, workout_start_date: str):
         self.response['workoutContext']['requestedDate'] = workout_start_date
 
-
         self.workout_csv = workout_record_handler.load_workout_records_into_dataframe()
         self.workout_data = workout_record_handler.load_workout_records_from_date(
             self.workout_csv, workout_start_date)
 
         self._build_response()
-    
+
     def get_response(self) -> Response:
         """Generates the Flask response object.
 

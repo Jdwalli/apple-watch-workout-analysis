@@ -39,6 +39,15 @@ def load_workout_records_from_date(dataframe: pd.DataFrame, workout_start_date: 
     return None if match.empty else match.to_dict(orient='records')
 
 
+def load_unique_workout_dates(dataframe: pd.DataFrame) -> List:
+    if not dataframe.empty:
+        dataframe = dataframe.replace(np.nan, "", regex=True)
+
+    dataframe["date"] = pd.to_datetime(dataframe["startDate"]).dt.strftime('%Y-%m-%d')
+
+    return dataframe["date"].unique().tolist()
+
+
 def load_workout_record_gpx_data(workout_file_reference: str):
     gpx_file_path = file_utils.format_workout_reference_into_path(
         workout_file_reference)
