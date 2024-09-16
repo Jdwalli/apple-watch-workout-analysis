@@ -1,6 +1,6 @@
 import React from "react";
 
-const WorkoutMetadataOutput: React.FC= () => {
+const WorkoutMetadataOutput: React.FC = () => {
   return (
     <div>
         Workout Metadata Output
