@@ -1,6 +1,7 @@
 
 import axios, { AxiosResponse } from "axios";
-import { ApiClientRequest } from "../types/client_types";
+import { ApiClientRequest, UploadExportResponse, ExportStatusResponse } from "../types/client_types";
+
 
 export default class ApiClient {
   private buildAxiosConfig(config: ApiClientRequest): any {
@@ -36,7 +37,7 @@ export default class ApiClient {
     }
   }
 
-  async uploadExport(healthZip: File): Promise<any> {
+  async uploadExport(healthZip: File): Promise<UploadExportResponse> {
     const formData: FormData = new FormData();
     formData.append("file", healthZip);
 
@@ -54,12 +55,12 @@ export default class ApiClient {
     }
   }
 
-  async dataStatus(): Promise<any> {
+  async dataStatus(): Promise<ExportStatusResponse> {
     try {
       const response = await this.request({
         httpMethod: "GET",
         headers: { "Content-Type": "application/json" },
-        path: "/api/data-status",
+        path: "/api/export-status",
       });
       return response.data;
     } catch (error) {

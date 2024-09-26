@@ -5,13 +5,25 @@ from utils import file_utils as file_utils
 
 def load_heart_rate_health_record_into_dataframe(record_path) -> pd.DataFrame:
     if file_utils.file_exists(record_path):
-        return pd.read_csv(record_path)
+        return pd.read_csv(record_path, dtype={
+            "type": "string",
+            "unit": "string",
+            "value": "float64",
+            "sourceName": "string",
+            "sourceVersion": "string",
+            "device": "string",
+            "creationDate": "string",
+            "startDate": "string",
+            "endDate": "string",
+            "heartRateMotionContext": "string"
+        })
     return pd.DataFrame()
+
 
 def load_health_record_into_dataframe(record_name: str) -> pd.DataFrame:
     record_path = os.path.join(
         file_utils.match_record_type_to_directory(record_name), f'{record_name}.csv')
-    
+
     if record_name == "HeartRate":
         return load_heart_rate_health_record_into_dataframe(record_path)
 
@@ -38,10 +50,10 @@ def load_health_record_into_chart_format(record_name: str, start_date: str, end_
 
     if df.empty:
         return {}
-    
+
     df['startDate'] = df['startDate'].apply(
         lambda x: x.strftime('%Y-%m-%d %H:%M:%S %z'))
-    
+
     return {
         "time": df['startDate'].to_list(),
         "value": df['value'].to_list()

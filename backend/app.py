@@ -1,20 +1,36 @@
 from flask import Flask, request
 from parsers.apple_health_export_parser import AppleHealthExportParser
 from utils.file_utils import create_health_export_directories
-from utils.response_utils import UploadResponse, RequestedWorkoutResponse, WorkoutDetailsResponse
+from utils.response_utils import UploadResponse, RequestedWorkoutResponse, WorkoutDetailsResponse, ExportStatusResponse
 import time
+from flask_caching import Cache
 
 FLASK_CONFIG = {
     "DEBUG": True,
+    "CACHE_TYPE": "SimpleCache",
+    "CACHE_DEFAULT_TIMEOUT": 3600
 }
 
 app = Flask(__name__)
 app.config.from_mapping(FLASK_CONFIG)
+cache = Cache(app)
 
 
 @app.route("/api/export-status", methods=["GET"])
-def send_data_status():
-    return NotImplemented
+@cache.cached()
+def send_export_status():
+    response_builder = ExportStatusResponse()
+    try:
+        response = response_builder.get_response()
+    except KeyError as ke:
+        response_builder.set_status_code(500)
+        response_builder.add_error(500, f"Internal Server Error: {str(ke)} is not a valid key.")
+    except Exception as e:
+        response_builder.set_status_code(500)
+        response_builder.add_error(
+            500, f"An unexpected error occurred: {str(e)}")
+
+    return response
 
 
 @app.route("/api/upload", methods=["POST"])
@@ -34,6 +50,8 @@ def upload_export_file():
             upload_end_time - upload_start_time)
         response_builder.set_upload_times(upload_start_time, upload_end_time)
 
+        cache.clear()
+
     except ValueError as ve:
         response_builder.set_status_code(400)
         response_builder.add_error(400, str(ve))
@@ -44,11 +62,20 @@ def upload_export_file():
 
     return response_builder.get_response()
 
-
 @app.route("/api/workout-details", methods=["GET"])
 def send_all_workout_details():
     response_builder = WorkoutDetailsResponse()
-    return response_builder.get_response()
+    try:
+        response = response_builder.get_response()
+    except KeyError as ke:
+        response_builder.set_status_code(500)
+        response_builder.add_error(500, f"Internal Server Error: {str(ke)} is not a valid key.")
+    except Exception as e:
+        response_builder.set_status_code(500)
+        response_builder.add_error(
+            500, f"An unexpected error occurred: {str(e)}")
+
+    return response
 
 @app.route("/api/workout", methods=["POST"])
 def send_requested_workout():

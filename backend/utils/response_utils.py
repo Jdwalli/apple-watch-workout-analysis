@@ -2,6 +2,8 @@ from flask import jsonify
 from flask import Response
 from handlers import health_record_handler as health_record_handler
 from handlers import workout_record_handler as workout_record_handler
+import os 
+import config
 
 
 class UploadResponse:
@@ -307,3 +309,50 @@ class RequestedWorkoutResponse:
         """
 
         return jsonify(self.response), self.response["workoutContext"]["statusCode"]
+
+class ExportStatusResponse:
+    def __init__(self):
+        self.response = {
+            "exportStatusContext": {
+                "statusCode": 200,
+                "exportPresent": False,
+                "errors": []
+            }
+        }
+
+
+    def _build_response(self):
+        workout_file_path = os.path.join(
+            config.WORKOUT_ELEMENTS_DIRECTORY, config.WORKOUTS_SUMMARY_FILE_NAME)
+        self.response["exportStatusContext"]["exportPresent"] = os.path.isfile(workout_file_path)
+    
+    def set_status_code(self, code: int):
+        """Sets the status code in the response.
+
+        Args:
+            code (int): The HTTP status code to set.
+        """
+        self.response["exportStatusContext"]["statusCode"] = code
+
+
+    def add_error(self, error_code: int, error_message: int):
+        """Sets the upload start and end times in the response.
+
+        Args:
+        """
+        error = {
+            "errorCode": error_code,
+            "errorMessage": error_message
+        }
+        self.response["exportStatusContext"]["errors"].append(error)
+
+    def get_response(self) -> Response:
+        """Generates the Flask response object.
+
+        Returns:
+            Response: The Flask response object with the JSON-encoded response data
+                      and the appropriate HTTP status code.
+        """
+        self._build_response()
+        return jsonify(self.response), self.response["exportStatusContext"]["statusCode"]
+    
