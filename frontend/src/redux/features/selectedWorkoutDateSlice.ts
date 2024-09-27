@@ -1,12 +1,8 @@
-// Change to selected WorkoutDate
-
-
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { SelectedWorkoutDate } from "../types";
 
 const initialState: SelectedWorkoutDate = {
-  selectedWorkoutDate: undefined
+  selectedWorkoutDate: undefined,
 };
 
 export const selectedWorkoutDateSlice = createSlice({

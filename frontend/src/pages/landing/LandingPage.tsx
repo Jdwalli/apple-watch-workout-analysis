@@ -1,22 +1,31 @@
 import React from "react";
 import { FileDropzone } from "@/components/FileDropzone";
 import ApiClient from "@/clients/api_clients";
+import { useSelector, useDispatch } from "react-redux";
+import { updateExportUploadingStatus } from "@/redux/features/exportUploadingStatusSlice";
+import { RootState } from "@/redux/store";
+import { useNavigate } from "react-router-dom";
 
 const LandingPage: React.FC = () => {
   const apiClient = new ApiClient();
-  const [uploading, setUploading] = React.useState(false);
-  const [fileName, setFileName] = React.useState("");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const exportUploadingStatus = useSelector(
+    (state: RootState) => state.exportUploadingStatus.exportUploadingStatus
+  );
 
   const onFileUpload = (acceptedFiles: File[]) => {
     const zipFile = acceptedFiles[0];
-    setUploading(true);
+    dispatch(updateExportUploadingStatus(true));
     apiClient
       .uploadExport(zipFile)
       .then((data) => {
-        setUploading(false);
+        dispatch(updateExportUploadingStatus(false));
+        navigate("/workouts");
       })
       .catch((error) => {
-        setUploading(false);
+        dispatch(updateExportUploadingStatus(false));
         if (error.response && error.response.status === 400) {
           alert("This is not an Apple Health Export!");
         }
@@ -27,7 +36,7 @@ const LandingPage: React.FC = () => {
     <div className="mt-32 max-w-6xl flex flex-col justify-center items-center mx-auto my-auto">
       <main>
         <section>
-          <h1 className="font-bold text-white text-4xl text-center mb-2">
+          <h1 className="font-bold text-4xl text-center mb-2">
             Apple Watch Workout Analysis Tool
           </h1>
           <p className="text-center text-lg">
@@ -39,10 +48,7 @@ const LandingPage: React.FC = () => {
           <FileDropzone onDrop={onFileUpload} />
         </section>
         <section>
-          <p>
-            {" "}
-            {uploading ? <p className="text-white">Uploading...</p> : null}
-          </p>
+          <p> {exportUploadingStatus ? <p>Uploading...</p> : null}</p>
         </section>
       </main>
     </div>
