@@ -17,7 +17,6 @@ cache = Cache(app)
 
 
 @app.route("/api/export-status", methods=["GET"])
-@cache.cached()
 def send_export_status():
     response_builder = ExportStatusResponse()
     try:
