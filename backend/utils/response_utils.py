@@ -166,6 +166,7 @@ class RequestedWorkoutResponse:
     def _build_workout_stats(self, workout):
         return {
             "workoutName": name_utils.remove_workout_activity_type_prefix(workout["workoutActivityType"]),
+            "workoutDeviceName": workout["sourceName"],
             "workoutDuration": workout["duration"],
             "workoutDurationUnit": workout["durationUnit"],
             "workoutTotalDistance": workout["distanceWalkingRunning"],
