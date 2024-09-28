@@ -35,6 +35,7 @@ const UploadButtonDialog: React.FC = () => {
   const onFileUpload = (acceptedFiles: File[]) => {
     const zipFile = acceptedFiles[0];
     dispatch(updateExportUploadingStatus(true));
+    navigate("/");
     setIsOpen(exportUploadingStatus);
     apiClient
       .uploadExport(zipFile)

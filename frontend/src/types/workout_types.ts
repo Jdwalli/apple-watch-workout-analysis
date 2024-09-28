@@ -104,24 +104,36 @@ export interface WorkoutStats {
   workoutTotalEnergyBurned: number;
   workoutTotalEnergyBurnedUnit: string;
   workoutCreationDate: string;
+  workoutDeviceName: string;
   workoutStartDate: string;
   workoutEndDate: string;
   workoutStatistics: WorkoutStatistics;
   workoutMetadata: WorkoutMetadata;
-  workoutRoute: string;
+  workoutRoute: WorkoutRoute;
   workoutVitals: WorkoutVitals;
 }
 
+export interface WorkoutRoute {
+  course: number[];
+  elevation: number[];
+  hAcc: number[];
+  vAcc: number[];
+  latitude: number[];
+  longitude: number[];
+  speed: number[];
+  time: string[];
+}
+
 export interface WorkoutContext {
-    statusCode: number;
-    requestedDate: string;
-    workouts: WorkoutStats[];
-    errors: RequestError[];
-  }
-  
-  export interface WorkoutDetailsContext {
-    statusCode: number;
-    totalWorkouts: number;
-    workoutDates: string[];
-    errors: RequestError[];
-  }
+  statusCode: number;
+  requestedDate: string;
+  workouts: WorkoutStats[];
+  errors: RequestError[];
+}
+
+export interface WorkoutDetailsContext {
+  statusCode: number;
+  totalWorkouts: number;
+  workoutDates: string[];
+  errors: RequestError[];
+}

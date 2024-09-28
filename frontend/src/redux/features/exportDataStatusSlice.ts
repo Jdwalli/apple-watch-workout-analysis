@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ExportDataStatus } from "../types";
 
 const initialState: ExportDataStatus = {
-  exportDataStatus: false,
+  exportDataStatus: true,
 };
 
 export const exportDataStatusSlice = createSlice({

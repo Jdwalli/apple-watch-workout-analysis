@@ -1,18 +1,10 @@
 import * as React from "react";
-import WorkoutPicker from "./components/WorkoutPicker";
-import WorkoutMetadataOutput from "./components/WorkoutMetadataOutput";
+import { Card } from "@/components/ui/card";
 
-interface Props {
-  
-}
+interface Props {}
 
 const WorkoutMetricsDisplay: React.FC<Props> = (props: Props) => {
-  return (
-    <div className="h-full">
-        <WorkoutPicker />
-        <WorkoutMetadataOutput />
-    </div>
-  );
+  return <Card className="w-full h-full">GPX MAP</Card>;
 };
 
 export default WorkoutMetricsDisplay;

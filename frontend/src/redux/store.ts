@@ -1,15 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
 
 // Slices
-import selectedWorkoutDateSlice from "./features/selectedWorkoutDateSlice";
-import exportUploadingStatusSlice from "./features/exportUploadingStatusSlice";
 import exportDataStatusSlice from "./features/exportDataStatusSlice";
+import exportUploadingStatusSlice from "./features/exportUploadingStatusSlice";
+import selectedWorkoutDateSlice from "./features/selectedWorkoutDateSlice";
+import selectedWorkoutSlice from "./features/selectedWorkoutSlice";
+import workoutLoadingStatusSlice from "./features/workoutLoadingStatusSlice";
 
 export const store = configureStore({
   reducer: {
     selectedWorkoutDate: selectedWorkoutDateSlice,
     exportUploadingStatus: exportUploadingStatusSlice,
     exportDataStatus: exportDataStatusSlice,
+    selectedWorkout: selectedWorkoutSlice,
+    workoutLoadingStatus: workoutLoadingStatusSlice,
   },
 });
 
