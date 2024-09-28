@@ -52,7 +52,8 @@ def load_workout_record_gpx_data(workout_file_reference: str):
     gpx_file_path = file_utils.format_workout_reference_into_path(
         workout_file_reference)
 
-    if file_utils.file_exists(gpx_file_path):
+    #TODO Add better method to ensure file is not a directory
+    if file_utils.file_exists(gpx_file_path) and not os.path.isdir(gpx_file_path):
         df = pd.read_csv(gpx_file_path)
         return {
             'longitude': df['lon'].to_list(),
