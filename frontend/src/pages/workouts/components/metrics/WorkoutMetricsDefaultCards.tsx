@@ -1,7 +1,7 @@
 import React from "react";
 import { WorkoutStats } from "@/types/workout_types";
 import WorkoutMetricsCard from "../WorkoutMetricsCard";
-import { formatWorkoutDuration } from "@/helpers/dataFormatting";
+import { formatWorkoutDuration, formatWorkoutDistance, formatHeartRateValues } from "@/helpers/dataFormatting";
 import { Clock, MapPin, Droplets, Heart } from "lucide-react";
 
 interface Props {
@@ -20,7 +20,7 @@ const WorkoutMetricsDefaultCards: React.FC<Props> = (props: Props) => {
       <WorkoutMetricsCard
         icon={<MapPin className="h-5 w-5" />}
         label="Distance"
-        value={props.workout.workoutTotalDistance.toFixed(2)}
+        value={formatWorkoutDistance(props.workout.workoutTotalDistance)}
         unit={props.workout.workoutTotalDistanceUnit}
       />
 
@@ -33,7 +33,7 @@ const WorkoutMetricsDefaultCards: React.FC<Props> = (props: Props) => {
       <WorkoutMetricsCard
         icon={<Heart className="h-5 w-5" />}
         label="Average Heart Rate"
-        value={Math.round(props.workout.workoutStatistics.heartRate.average)}
+        value={formatHeartRateValues(props.workout.workoutStatistics.heartRate.average)}
         unit={"BPM"}
       />
     </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { WorkoutStats } from "@/types/workout_types";
-import { formatWorkoutDates } from "@/helpers/dateHelpers";
+import { formatWorkoutDates } from "@/helpers/dataFormatting";
 
 interface Props {
   workout: WorkoutStats;

@@ -5,6 +5,7 @@ import config
 import os
 from typing import List
 
+
 def load_workout_records_into_dataframe() -> pd.DataFrame:
     workout_csv_path = os.path.join(config.WORKOUT_ELEMENTS_DIRECTORY,
                                     config.WORKOUTS_SUMMARY_FILE_NAME)
@@ -43,7 +44,8 @@ def load_unique_workout_dates(dataframe: pd.DataFrame) -> List:
     if not dataframe.empty:
         dataframe = dataframe.replace(np.nan, "", regex=True)
 
-    dataframe["date"] = pd.to_datetime(dataframe["startDate"]).dt.strftime('%Y-%m-%d')
+    dataframe["date"] = pd.to_datetime(
+        dataframe["startDate"]).dt.strftime('%Y-%m-%d')
 
     return dataframe["date"].unique().tolist()
 
@@ -52,7 +54,7 @@ def load_workout_record_gpx_data(workout_file_reference: str):
     gpx_file_path = file_utils.format_workout_reference_into_path(
         workout_file_reference)
 
-    #TODO Add better method to ensure file is not a directory
+    # TODO Add better method to ensure file is not a directory
     if file_utils.file_exists(gpx_file_path) and not os.path.isdir(gpx_file_path):
         df = pd.read_csv(gpx_file_path)
         return {
@@ -65,4 +67,13 @@ def load_workout_record_gpx_data(workout_file_reference: str):
             'hAcc': df['hAcc'].to_list(),
             'vAcc': df['vAcc'].to_list()
         }
-    return {}
+    return {
+        'longitude': [],
+        'latitude': [],
+        'elevation': [],
+        'time': [],
+        'speed': [],
+        'course': [],
+        'hAcc': [],
+        'vAcc': []
+    }

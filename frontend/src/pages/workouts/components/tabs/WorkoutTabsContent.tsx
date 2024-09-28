@@ -13,7 +13,13 @@ import {
   Footprints,
   Atom,
 } from "lucide-react";
-import { formatWorkoutDuration } from "@/helpers/dataFormatting";
+import {
+  formatWorkoutDuration,
+  formatHeartRateValues,
+  formatTemperatureValue,
+  formatHumidityValue,
+  formatWorkoutDistance
+} from "@/helpers/dataFormatting";
 
 interface WorkoutPerformanceCategoryProps {
   title: string;
@@ -105,7 +111,7 @@ export const WorkoutOverviewContent: React.FC<ContentProps> = (
         />
         <DetailItem
           label="Distance"
-          value={`${props.workout.workoutTotalDistance} ${props.workout.workoutTotalDistanceUnit}`}
+          value={`${formatWorkoutDistance(props.workout.workoutTotalDistance)} ${props.workout.workoutTotalDistanceUnit}`}
         />
         <DetailItem
           label="Creation Date"
@@ -120,11 +126,15 @@ export const WorkoutOverviewContent: React.FC<ContentProps> = (
       <DetailSection title="Environmental Conditions">
         <DetailItem
           label="Temperature"
-          value={`${props.workout.workoutMetadata.weatherTemperature}`}
+          value={`${formatTemperatureValue(
+            props.workout.workoutMetadata.weatherTemperature
+          )}`}
         />
         <DetailItem
           label="Humidity"
-          value={`${props.workout.workoutMetadata.weatherHumidity}`}
+          value={`${formatHumidityValue(
+            props.workout.workoutMetadata.weatherHumidity
+          )}`}
         />
         <DetailItem
           label="Water Salinity"
@@ -325,15 +335,21 @@ export const WorkoutVitalsContent: React.FC<ContentProps> = (
       <DetailSection title="Vitals">
         <DetailItem
           label="Avg Heart Rate"
-          value={`${props.workout.workoutStatistics.heartRate.average} BPM`}
+          value={`${formatHeartRateValues(
+            props.workout.workoutStatistics.heartRate.average
+          )} BPM`}
         />
         <DetailItem
           label="Min Heart Rate"
-          value={`${props.workout.workoutStatistics.heartRate.minimum} BPM`}
+          value={`${formatHeartRateValues(
+            props.workout.workoutStatistics.heartRate.minimum
+          )} BPM`}
         />
         <DetailItem
           label="Max Heart Rate"
-          value={`${props.workout.workoutStatistics.heartRate.maximum} BPM`}
+          value={`${formatHeartRateValues(
+            props.workout.workoutStatistics.heartRate.maximum
+          )} BPM`}
         />
         <DetailItem
           label="Average Mets"
