@@ -4,6 +4,7 @@ from handlers import health_record_handler as health_record_handler
 from handlers import workout_record_handler as workout_record_handler
 import os 
 import config
+from utils import name_utils as name_utils
 
 
 class UploadResponse:
@@ -164,7 +165,7 @@ class RequestedWorkoutResponse:
 
     def _build_workout_stats(self, workout):
         return {
-            "workoutName": workout["workoutActivityType"],
+            "workoutName": name_utils.remove_workout_activity_type_prefix(workout["workoutActivityType"]),
             "workoutDuration": workout["duration"],
             "workoutDurationUnit": workout["durationUnit"],
             "workoutTotalDistance": workout["distanceWalkingRunning"],
