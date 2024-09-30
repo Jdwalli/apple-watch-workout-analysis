@@ -18,7 +18,7 @@ const WorkoutMetricsDisplay: React.FC<Props> = (props: Props) => {
         lat={selectedWorkout?.workoutRoute.latitude ?? []}
         long={selectedWorkout?.workoutRoute.longitude ?? []}
       />
-      <WorkoutCharts />
+      <WorkoutCharts workout={selectedWorkout} />
     </Card>
   );
 };

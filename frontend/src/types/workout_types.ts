@@ -22,7 +22,10 @@ export interface WorkoutMetadata {
 
 export interface WorkoutVitals {
   heartRate: {
-    chart: Record<string, string[]>;
+    chart: {
+      time: string[];
+      value: number[];
+    };
     unit: string;
   };
 }
@@ -55,35 +58,50 @@ export interface WorkoutStatistics {
     minimum: number;
     maximum: number;
     unit: string;
-    chart: Record<string, string[]>;
+    chart: {
+      time: string[];
+      value: number[];
+    };
   };
   runningPower: {
     average: number;
     minimum: number;
     maximum: number;
     unit: string;
-    chart: Record<string, string[]>;
+    chart: {
+      time: string[];
+      value: number[];
+    };
   };
   runningVerticalOscillation: {
     average: number;
     minimum: number;
     maximum: number;
     unit: string;
-    chart: Record<string, string[]>;
+    chart: {
+      time: string[];
+      value: number[];
+    };
   };
   runningSpeed: {
     average: number;
     minimum: number;
     maximum: number;
     unit: string;
-    chart: Record<string, string[]>;
+    chart: {
+      time: string[];
+      value: number[];
+    };
   };
   runningStrideLength: {
     average: number;
     minimum: number;
     maximum: number;
     unit: string;
-    chart: Record<string, string[]>;
+    chart: {
+      time: string[];
+      value: number[];
+    };
   };
   distanceSwimming: {
     sum: number;
