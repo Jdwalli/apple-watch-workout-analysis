@@ -37,12 +37,20 @@ const WorkoutPicker: React.FC<Props> = (props: Props) => {
 
   React.useEffect(() => {
     if (workouts.length > 0) {
+
+      if(currentIndex >= workouts.length) {
+        setCurrentIndex(0)
+      }
+
       dispatch(
         updateSelectedWorkout({
           workout: workouts[currentIndex],
         })
       );
     }
+
+    
+
   }, [currentIndex, workouts, dispatch]);
 
   const handlePrevious = () => {
