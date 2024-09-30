@@ -53,7 +53,6 @@ export const formatWorkoutDates = (
 
 export const formatWorkoutDistance = (workoutDistance: string | number): string => {
   const formattedValue = parseInputValue(workoutDistance);
-  console.log(formattedValue)
   if (formattedValue !== "-" && typeof workoutDistance === 'number') {
         return workoutDistance.toFixed(2).toString();
   }
