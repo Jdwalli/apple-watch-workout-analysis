@@ -71,7 +71,7 @@ const WorkoutDatePicker: React.FC<Props> = (props: Props) => {
             disabled: (day) => !isValidWorkoutDate(day),
           }}
           initialFocus
-          defaultMonth={enabledDates[props.workoutDates.length - 1]}
+          defaultMonth={selectedWorkoutDate ? date : enabledDates[props.workoutDates.length - 1]}
           fromDate={enabledDates[0]}
           toDate={enabledDates[props.workoutDates.length - 1]}
           className="custom-calendar"
