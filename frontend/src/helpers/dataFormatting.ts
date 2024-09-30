@@ -1,4 +1,5 @@
 import { format, parseISO } from "date-fns";
+import { formatInTimeZone } from 'date-fns-tz'
 
 
 const parseInputValue = (input: string | number, suffix?: string): string => {
@@ -28,15 +29,24 @@ export const formatWorkoutDuration = (durationInMinutes: number): string => {
   )}:${String(seconds).padStart(2, "0")}`;
 };
 
+
+export const formatWorkoutDate = (workoutDate: string, timeZone: string): string => {
+  const parsedDate = parseISO(workoutDate.trim().split(" - ")[0].slice(0, -6));
+    return formatInTimeZone(parsedDate, timeZone, "M/d/yyyy, h:mm:ss a");
+}
+
+
 export const formatWorkoutDates = (
   startDate: string,
-  endDate: string
+  endDate: string,
+  timeZone: string,
 ): string => {
+
   const workoutStart = parseISO(startDate.trim().split(" - ")[0].slice(0, -6));
   const workoutEnd = parseISO(endDate.trim().split(" - ")[0].slice(0, -6));
 
-  const formattedStartDate = format(workoutStart, "h:mm a");
-  const formattedEndDate = format(workoutEnd, "h:mm a");
+  const formattedStartDate = formatInTimeZone(workoutStart, timeZone, "h:mm a");
+  const formattedEndDate = formatInTimeZone(workoutEnd, timeZone, "h:mm a");
 
   return `${formattedStartDate} - ${formattedEndDate}`;
 };

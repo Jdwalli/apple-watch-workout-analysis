@@ -50,7 +50,6 @@ const WorkoutMap: React.FC<Props> = (props: Props) => {
 
   const { lat, long } = props;
   const hasCoordinates = lat.length > 0 && long.length > 0;
-  console.log(hasCoordinates);
   const { center, zoom } = hasCoordinates
     ? calculateMapCenterAndZoom(lat, long)
     : { center: defaultCenter, zoom: defaultZoom };

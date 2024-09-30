@@ -14,6 +14,7 @@ import {
   Atom,
 } from "lucide-react";
 import {
+  formatWorkoutDate,
   formatWorkoutDuration,
   formatHeartRateValues,
   formatTemperatureValue,
@@ -99,11 +100,11 @@ export const WorkoutOverviewContent: React.FC<ContentProps> = (
         />
         <DetailItem
           label="Start Date"
-          value={new Date(props.workout.workoutStartDate).toLocaleString()}
+          value={formatWorkoutDate(props.workout.workoutStartDate, props.workout.workoutMetadata.timeZone)}
         />
         <DetailItem
           label="End Date"
-          value={new Date(props.workout.workoutEndDate).toLocaleString()}
+          value={formatWorkoutDate(props.workout.workoutEndDate, props.workout.workoutMetadata.timeZone)}
         />
         <DetailItem
           label="Duration"
@@ -115,7 +116,7 @@ export const WorkoutOverviewContent: React.FC<ContentProps> = (
         />
         <DetailItem
           label="Creation Date"
-          value={new Date(props.workout.workoutCreationDate).toLocaleString()}
+          value={formatWorkoutDate(props.workout.workoutEndDate, props.workout.workoutMetadata.timeZone)}
         />
         <DetailItem
           label="Time Zone"

@@ -15,7 +15,8 @@ const WorkoutMetricsHeader: React.FC<Props> = (props: Props) => {
           <p className="text-sm text-gray-400">
             {formatWorkoutDates(
               props.workout.workoutStartDate,
-              props.workout.workoutEndDate
+              props.workout.workoutEndDate,
+              props.workout.workoutMetadata.timeZone
             )}
           </p>
         </div>
