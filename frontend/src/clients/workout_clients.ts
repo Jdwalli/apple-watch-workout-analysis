@@ -1,5 +1,6 @@
 import ApiClient from "./api_clients";
 import { GetWorkoutsByDateParameters, WorkoutResponse, WorkoutDetailsResponse } from "../types/client_types";
+import { ENDPOINTS } from "../config/apiConstants";
 
 export class WorkoutApiClient {
   apiClient = new ApiClient();
@@ -11,7 +12,7 @@ export class WorkoutApiClient {
     try {
       const response = await this.apiClient.request({
         httpMethod: 'GET',
-        path: '/api/workout-details',
+        path: ENDPOINTS.WORKOUT_DETAILS,
       });
       return response.data;
     } catch (error) {
@@ -25,7 +26,7 @@ export class WorkoutApiClient {
     try {
       const response = await this.apiClient.request({
         httpMethod: 'POST',
-        path: '/api/workout',
+        path: ENDPOINTS.WORKOUT,
         headers: this.HEADERS,
         body: params
       });

@@ -1,6 +1,7 @@
 
 import axios, { AxiosResponse } from "axios";
 import { ApiClientRequest, UploadExportResponse, ExportStatusResponse } from "../types/client_types";
+import { ENDPOINTS } from "../config/apiConstants";
 
 
 export default class ApiClient {
@@ -45,7 +46,7 @@ export default class ApiClient {
       const response = await this.request({
         httpMethod: "POST",
         headers: { "Content-Type": "multipart/form-data" },
-        path: "/api/upload",
+        path: ENDPOINTS.UPLOAD,
         body: formData,
       });
       return response.data;
@@ -60,7 +61,7 @@ export default class ApiClient {
       const response = await this.request({
         httpMethod: "GET",
         headers: { "Content-Type": "application/json" },
-        path: "/api/export-status",
+        path: ENDPOINTS.EXPORT_STATUS,
       });
       return response.data;
     } catch (error) {
