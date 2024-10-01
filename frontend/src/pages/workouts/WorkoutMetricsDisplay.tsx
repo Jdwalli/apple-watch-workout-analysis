@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import WorkoutMap from "./components/analytics/WorkoutMap";
 import WorkoutCharts from "./components/analytics/WorkoutCharts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {}
 
@@ -12,13 +13,32 @@ const WorkoutMetricsDisplay: React.FC<Props> = (props: Props) => {
     (state: RootState) => state.selectedWorkout.workout
   );
 
+  const workoutLoadingStatus = useSelector(
+    (state: RootState) => state.workoutLoadingStatus.workoutLoadingStatus
+  );
+
   return (
     <Card className="w-full h-full">
       <WorkoutMap
         lat={selectedWorkout?.workoutRoute.latitude ?? []}
         long={selectedWorkout?.workoutRoute.longitude ?? []}
       />
-      <WorkoutCharts workout={selectedWorkout} />
+
+      {workoutLoadingStatus ? (
+        <>
+          <Skeleton className="h-24 mt-2 w-full mb-4" />
+          <Skeleton className="h-full w-full mb-4" />
+        </>
+      ) : selectedWorkout ? (
+        <>
+          <WorkoutCharts workout={selectedWorkout} />
+        </>
+      ) : (
+        <div className="p-4 w-full flex justify-center">
+          <p className="text-2xl">{`Please select a date`}</p>
+        </div>
+      )}
+
     </Card>
   );
 };

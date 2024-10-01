@@ -16,7 +16,10 @@ interface Props {
 const WorkoutPicker: React.FC<Props> = (props: Props) => {
   const dispatch = useDispatch();
   const workoutClient = new WorkoutApiClient();
-  const workouts = React.useMemo(() => props.workoutData?.workouts ?? [], [props.workoutData]);
+  const workouts = React.useMemo(
+    () => props.workoutData?.workouts ?? [],
+    [props.workoutData]
+  );
   const totalWorkouts = workouts.length;
   const [workoutDetails, setWorkoutDetails] =
     React.useState<WorkoutDetailsContext>();
@@ -33,13 +36,12 @@ const WorkoutPicker: React.FC<Props> = (props: Props) => {
     };
 
     fetchWorkoutDetails();
-  }, []);
+  }, [dispatch]);
 
   React.useEffect(() => {
     if (workouts.length > 0) {
-
-      if(currentIndex >= workouts.length) {
-        setCurrentIndex(0)
+      if (currentIndex >= workouts.length) {
+        setCurrentIndex(0);
       }
 
       dispatch(
@@ -48,9 +50,6 @@ const WorkoutPicker: React.FC<Props> = (props: Props) => {
         })
       );
     }
-
-    
-
   }, [currentIndex, workouts, dispatch]);
 
   const handlePrevious = () => {

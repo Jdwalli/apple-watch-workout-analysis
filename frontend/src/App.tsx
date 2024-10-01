@@ -19,6 +19,10 @@ function App() {
     (state: RootState) => state.exportDataStatus.exportDataStatus
   );
 
+  const exportUploadingStatus = useSelector(
+    (state: RootState) => state.exportUploadingStatus.exportUploadingStatus
+  );
+
   React.useEffect(() => {
     const fetchExportDataStatus = async () => {
       try {
@@ -35,7 +39,7 @@ function App() {
     };
 
     fetchExportDataStatus();
-  });
+  }, [dispatch, exportUploadingStatus]);
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

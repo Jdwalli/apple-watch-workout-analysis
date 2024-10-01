@@ -22,7 +22,6 @@ const WorkoutsPage: React.FC = () => {
     const fetchWorkoutData = async () => {
       if (selectedWorkoutDate) {
         setLoading(true);
-        console.log(loading);
         try {
           const params: GetWorkoutsByDateParameters = {
             workoutStartDate: selectedWorkoutDate,
@@ -41,11 +40,11 @@ const WorkoutsPage: React.FC = () => {
     };
 
     fetchWorkoutData();
-  }, [selectedWorkoutDate]);
+  }, [selectedWorkoutDate]); 
 
   React.useEffect(() => {
     dispatch(updateWorkoutLoadingStatus(loading));
-  }, [loading]);
+  }, [dispatch, loading]);
 
   return (
     <div className="container relative h-full flex-col items-center justify-center grid lg:max-w-none grid-cols-[35%,65%] px-0">
