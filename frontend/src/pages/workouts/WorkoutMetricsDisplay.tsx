@@ -18,11 +18,15 @@ const WorkoutMetricsDisplay: React.FC<Props> = (props: Props) => {
   );
 
   return (
-    <Card className="w-full h-full">
-      <WorkoutMap
-        lat={selectedWorkout?.workoutRoute.latitude ?? []}
-        long={selectedWorkout?.workoutRoute.longitude ?? []}
-      />
+    <Card className="w-full h-full overflow-hidden">
+      {workoutLoadingStatus ? (
+        <WorkoutMap lat={[]} long={[]} />
+      ) : (
+        <WorkoutMap
+          lat={selectedWorkout?.workoutRoute.latitude ?? []}
+          long={selectedWorkout?.workoutRoute.longitude ?? []}
+        />
+      )}
 
       {workoutLoadingStatus ? (
         <>
@@ -38,7 +42,6 @@ const WorkoutMetricsDisplay: React.FC<Props> = (props: Props) => {
           <p className="text-2xl">{`Please select a date`}</p>
         </div>
       )}
-
     </Card>
   );
 };

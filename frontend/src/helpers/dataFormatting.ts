@@ -59,8 +59,13 @@ export const formatWorkoutDistance = (workoutDistance: string | number): string 
   return formattedValue;
 };
 
-export const formatHeartRateValues = (heartRate: string | number): string => {
-  return parseInputValue(heartRate);
+export const formatHeartRateValues = (heartRate: string | number, unit: string): string => {
+  const formattedValue = parseInputValue(heartRate)
+  if (formattedValue == "-") {
+    return formattedValue
+  }
+
+  return `${parseInputValue(heartRate)} ${unit}`
 };
 
 export const formatTemperatureValue = (temperature: string | number): string => {

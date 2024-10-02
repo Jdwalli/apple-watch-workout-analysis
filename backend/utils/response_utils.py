@@ -272,6 +272,10 @@ class RequestedWorkoutResponse:
                 "sum": workout['distanceSwimming'],
                 "unit": workout['distanceSwimmingUnit'],
             },
+            "distanceCycling": {
+                "sum": workout['distanceCycling'],
+                "unit": workout['distanceCyclingUnit'],
+            },
             "swimmingStrokeCount": {
                 "sum": workout['swimmingStrokeCount'],
                 "unit": workout['swimmingStrokeCountUnit'],

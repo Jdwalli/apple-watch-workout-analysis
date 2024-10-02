@@ -9,6 +9,25 @@ interface Props {
 }
 
 const WorkoutMetricsDefaultCards: React.FC<Props> = (props: Props) => {
+
+  let distance = 0
+  let distanceUnit = ""
+
+  switch (props.workout.workoutName) {
+    case "Swimming":
+      distance = props.workout.workoutStatistics.distanceSwimming.sum;
+      distanceUnit = props.workout.workoutStatistics.distanceSwimming.unit;
+      break;
+    case "Cycling":
+      distance = props.workout.workoutStatistics.distanceCycling.sum;
+      distanceUnit = props.workout.workoutStatistics.distanceCycling.unit;
+      break;
+    default:
+      distance = props.workout.workoutTotalDistance;
+      distanceUnit = props.workout.workoutTotalDistanceUnit;
+      break;
+  }
+
   return (
     <div className="grid grid-cols-2 gap-4 mb-6">
       <WorkoutMetricsCard
@@ -20,8 +39,8 @@ const WorkoutMetricsDefaultCards: React.FC<Props> = (props: Props) => {
       <WorkoutMetricsCard
         icon={<MapPin className="h-5 w-5" />}
         label="Distance"
-        value={formatWorkoutDistance(props.workout.workoutTotalDistance)}
-        unit={props.workout.workoutTotalDistanceUnit}
+        value={formatWorkoutDistance(distance)}
+        unit={distanceUnit}
       />
 
       <WorkoutMetricsCard
@@ -33,8 +52,8 @@ const WorkoutMetricsDefaultCards: React.FC<Props> = (props: Props) => {
       <WorkoutMetricsCard
         icon={<Heart className="h-5 w-5" />}
         label="Average Heart Rate"
-        value={formatHeartRateValues(props.workout.workoutStatistics.heartRate.average)}
-        unit={"BPM"}
+        value={formatHeartRateValues(props.workout.workoutStatistics.heartRate.average, "BPM")}
+        unit={""}
       />
     </div>
   );

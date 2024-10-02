@@ -107,6 +107,10 @@ export interface WorkoutStatistics {
     sum: number;
     unit: string;
   };
+  distanceCycling: {
+    sum: number;
+    unit: string;
+  };
   swimmingStrokeCount: {
     sum: number;
     unit: string;

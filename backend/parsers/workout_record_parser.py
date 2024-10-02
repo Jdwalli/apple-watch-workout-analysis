@@ -181,6 +181,8 @@ class WorkoutRecordParser:
         "runningStrideLengthUnit",
         "distanceSwimming",
         "distanceSwimmingUnit",
+        "distanceCycling",
+        "distanceCyclingUnit",
         "swimmingStrokeCount",
         "swimmingStrokeCountUnit"
     ]
@@ -403,6 +405,8 @@ class WorkoutRecordParser:
         runningStrideLengthUnit = ""
         distanceSwimming = ""
         distanceSwimmingUnit = ""
+        distanceCycling = ""
+        distanceCyclingUnit = ""
         swimmingStrokeCount = ""
         swimmingStrokeCountUnit = ""
 
@@ -470,6 +474,10 @@ class WorkoutRecordParser:
                     distanceSwimming = float(statistic.get("sum"))
                     distanceSwimmingUnit = statistic.get("unit")
 
+                case "HKQuantityTypeIdentifierDistanceCycling":
+                    distanceCycling = float(statistic.get("sum"))
+                    distanceCyclingUnit = statistic.get("unit")
+
                 case "HKQuantityTypeIdentifierSwimmingStrokeCount":
                     swimmingStrokeCount = float(statistic.get("sum"))
                     swimmingStrokeCountUnit = statistic.get("unit")
@@ -509,6 +517,8 @@ class WorkoutRecordParser:
             runningStrideLengthUnit,
             distanceSwimming,
             distanceSwimmingUnit,
+            distanceCycling,
+            distanceCyclingUnit,
             swimmingStrokeCount,
             swimmingStrokeCountUnit
         )

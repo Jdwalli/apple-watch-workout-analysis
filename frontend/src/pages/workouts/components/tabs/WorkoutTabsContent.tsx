@@ -90,6 +90,26 @@ export const DetailItem: React.FC<DetailsItemsProps> = (
 export const WorkoutOverviewContent: React.FC<ContentProps> = (
   props: ContentProps
 ) => {
+
+  let distance = 0
+  let distanceUnit = ""
+
+  switch (props.workout.workoutName) {
+    case "Swimming":
+      distance = props.workout.workoutStatistics.distanceSwimming.sum;
+      distanceUnit = props.workout.workoutStatistics.distanceSwimming.unit;
+      break;
+    case "Cycling":
+      distance = props.workout.workoutStatistics.distanceCycling.sum;
+      distanceUnit = props.workout.workoutStatistics.distanceCycling.unit;
+      break;
+    default:
+      distance = props.workout.workoutTotalDistance;
+      distanceUnit = props.workout.workoutTotalDistanceUnit;
+      break;
+  }
+
+
   return (
     <div className="space-y-6  h-96 overflow-y-auto pb-12 ">
       <DetailSection title="General Workout Information">
@@ -112,7 +132,7 @@ export const WorkoutOverviewContent: React.FC<ContentProps> = (
         />
         <DetailItem
           label="Distance"
-          value={`${formatWorkoutDistance(props.workout.workoutTotalDistance)} ${props.workout.workoutTotalDistanceUnit}`}
+          value={`${formatWorkoutDistance(distance)} ${distanceUnit}`}
         />
         <DetailItem
           label="Creation Date"
@@ -337,20 +357,20 @@ export const WorkoutVitalsContent: React.FC<ContentProps> = (
         <DetailItem
           label="Avg Heart Rate"
           value={`${formatHeartRateValues(
-            props.workout.workoutStatistics.heartRate.average
-          )} BPM`}
+            props.workout.workoutStatistics.heartRate.average, "BPM"
+          )}`}
         />
         <DetailItem
           label="Min Heart Rate"
           value={`${formatHeartRateValues(
-            props.workout.workoutStatistics.heartRate.minimum
-          )} BPM`}
+            props.workout.workoutStatistics.heartRate.minimum, "BPM"
+          )}`}
         />
         <DetailItem
           label="Max Heart Rate"
           value={`${formatHeartRateValues(
-            props.workout.workoutStatistics.heartRate.maximum
-          )} BPM`}
+            props.workout.workoutStatistics.heartRate.maximum, "BPM"
+          )}`}
         />
         <DetailItem
           label="Average Mets"
