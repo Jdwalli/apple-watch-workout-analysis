@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,11 @@ const WorkoutDatePicker: React.FC<Props> = (props: Props) => {
             disabled: (day) => !isValidWorkoutDate(day),
           }}
           initialFocus
-          defaultMonth={selectedWorkoutDate ? date : enabledDates[props.workoutDates.length - 1]}
+          defaultMonth={
+            selectedWorkoutDate
+              ? date
+              : enabledDates[props.workoutDates.length - 1]
+          }
           fromDate={enabledDates[0]}
           toDate={enabledDates[props.workoutDates.length - 1]}
           className="custom-calendar"

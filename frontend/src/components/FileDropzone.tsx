@@ -53,7 +53,7 @@ const FileDropzone: React.FunctionComponent<WrapperProps> = (
       "application/x-7z-compressed": [".7z"],
       "application/gzip": [".gz"],
     },
-    onError: (e: any) => console.error(`File Dropzone Error: ${e}`),
+    onError: (e: Error) => console.error(`File Dropzone Error: ${e}`),
   });
 
   const style = React.useMemo(

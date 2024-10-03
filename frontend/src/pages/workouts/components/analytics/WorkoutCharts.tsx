@@ -8,7 +8,7 @@ interface Props {
 }
 
 const WorkoutCharts: React.FC<Props> = (props: Props) => {
-  const workout = props.workout;
+  const { workout } = props;
 
   const availableCharts = {
     heartRate: workout?.workoutVitals.heartRate.chart != undefined,
@@ -35,17 +35,18 @@ const WorkoutCharts: React.FC<Props> = (props: Props) => {
   };
 
   const availableTabs = Object.entries(availableCharts).filter(
-    ([_, value]) => value
+    ([, value]) => value
   );
   const defaultTab = availableTabs[0]?.[0] || "";
-  console.log(availableTabs.length > 0 ? availableTabs.length : 8)
-  console.log(availableTabs)
+
+  let gridColsClass = "grid-cols-8";
+  if (availableTabs.length > 0) {
+    gridColsClass = `grid-cols-${availableTabs.length}`;
+  }
 
   return (
-    <Tabs defaultValue={defaultTab} className="w-full">
-      <TabsList
-        className={`grid w-full grid-cols-${availableTabs.length.toString()} mb-4`}
-      >
+    <Tabs defaultValue={defaultTab} className="w-full  overflow-hidden">
+      <TabsList className={`grid w-full ${gridColsClass} mb-4`}>
         {availableCharts.heartRate && (
           <TabsTrigger value="heartRate">Heart Rate</TabsTrigger>
         )}

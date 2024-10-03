@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -6,9 +6,7 @@ import WorkoutMap from "./components/analytics/WorkoutMap";
 import WorkoutCharts from "./components/analytics/WorkoutCharts";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Props {}
-
-const WorkoutMetricsDisplay: React.FC<Props> = (props: Props) => {
+const WorkoutMetricsDisplay: React.FC = () => {
   const selectedWorkout = useSelector(
     (state: RootState) => state.selectedWorkout.workout
   );

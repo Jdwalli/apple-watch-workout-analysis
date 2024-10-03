@@ -1,8 +1,8 @@
-import { NavigationLink } from "../types/navigation_types"
+import { NavigationLink } from "../types/navigation_types";
 
 export const NavigationLinks: NavigationLink[] = [
-    {
-        title: "Workouts",
-        link: "/workouts",
-    },
-]
+  {
+    title: "Workouts",
+    link: "/workouts",
+  },
+];

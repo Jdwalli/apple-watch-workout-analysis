@@ -39,7 +39,7 @@ const UploadButtonDialog: React.FC = () => {
     setIsOpen(exportUploadingStatus);
     apiClient
       .uploadExport(zipFile)
-      .then((data) => {
+      .then(() => {
         dispatch(updateExportUploadingStatus(false));
         navigate("/workouts");
       })

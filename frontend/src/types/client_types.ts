@@ -1,12 +1,11 @@
 import { WorkoutContext, WorkoutDetailsContext } from "./workout_types";
 
-
 export interface ApiClientRequest {
   httpMethod: "GET" | "POST";
   path: string;
-  body?: any;
-  queryParams?: any;
-  headers?: any;
+  body?: unknown;
+  queryParams?: Record<string, string>;
+  headers?: Record<string, string>;
 }
 
 export interface ApiResponse<T> {

@@ -40,7 +40,7 @@ const WorkoutsPage: React.FC = () => {
     };
 
     fetchWorkoutData();
-  }, [selectedWorkoutDate]); 
+  }, [selectedWorkoutDate]);
 
   React.useEffect(() => {
     dispatch(updateWorkoutLoadingStatus(loading));

@@ -19,7 +19,7 @@ import {
   formatHeartRateValues,
   formatTemperatureValue,
   formatHumidityValue,
-  formatWorkoutDistance
+  formatWorkoutDistance,
 } from "@/helpers/dataFormatting";
 
 interface WorkoutPerformanceCategoryProps {
@@ -44,7 +44,7 @@ interface ContentProps {
 
 interface DetailsSectionProps {
   title: string;
-  children: any;
+  children: React.ReactNode;
 }
 
 interface DetailsItemsProps {
@@ -90,9 +90,8 @@ export const DetailItem: React.FC<DetailsItemsProps> = (
 export const WorkoutOverviewContent: React.FC<ContentProps> = (
   props: ContentProps
 ) => {
-
-  let distance = 0
-  let distanceUnit = ""
+  let distance = 0;
+  let distanceUnit = "";
 
   switch (props.workout.workoutName) {
     case "Swimming":
@@ -109,7 +108,6 @@ export const WorkoutOverviewContent: React.FC<ContentProps> = (
       break;
   }
 
-
   return (
     <div className="space-y-6  h-96 overflow-y-auto pb-12 ">
       <DetailSection title="General Workout Information">
@@ -120,11 +118,17 @@ export const WorkoutOverviewContent: React.FC<ContentProps> = (
         />
         <DetailItem
           label="Start Date"
-          value={formatWorkoutDate(props.workout.workoutStartDate, props.workout.workoutMetadata.timeZone)}
+          value={formatWorkoutDate(
+            props.workout.workoutStartDate,
+            props.workout.workoutMetadata.timeZone
+          )}
         />
         <DetailItem
           label="End Date"
-          value={formatWorkoutDate(props.workout.workoutEndDate, props.workout.workoutMetadata.timeZone)}
+          value={formatWorkoutDate(
+            props.workout.workoutEndDate,
+            props.workout.workoutMetadata.timeZone
+          )}
         />
         <DetailItem
           label="Duration"
@@ -136,7 +140,10 @@ export const WorkoutOverviewContent: React.FC<ContentProps> = (
         />
         <DetailItem
           label="Creation Date"
-          value={formatWorkoutDate(props.workout.workoutEndDate, props.workout.workoutMetadata.timeZone)}
+          value={formatWorkoutDate(
+            props.workout.workoutEndDate,
+            props.workout.workoutMetadata.timeZone
+          )}
         />
         <DetailItem
           label="Time Zone"
@@ -357,19 +364,22 @@ export const WorkoutVitalsContent: React.FC<ContentProps> = (
         <DetailItem
           label="Avg Heart Rate"
           value={`${formatHeartRateValues(
-            props.workout.workoutStatistics.heartRate.average, "BPM"
+            props.workout.workoutStatistics.heartRate.average,
+            "BPM"
           )}`}
         />
         <DetailItem
           label="Min Heart Rate"
           value={`${formatHeartRateValues(
-            props.workout.workoutStatistics.heartRate.minimum, "BPM"
+            props.workout.workoutStatistics.heartRate.minimum,
+            "BPM"
           )}`}
         />
         <DetailItem
           label="Max Heart Rate"
           value={`${formatHeartRateValues(
-            props.workout.workoutStatistics.heartRate.maximum, "BPM"
+            props.workout.workoutStatistics.heartRate.maximum,
+            "BPM"
           )}`}
         />
         <DetailItem

@@ -20,7 +20,7 @@ const LandingPage: React.FC = () => {
     dispatch(updateExportUploadingStatus(true));
     apiClient
       .uploadExport(zipFile)
-      .then((data) => {
+      .then(() => {
         dispatch(updateExportUploadingStatus(false));
         navigate("/workouts");
       })

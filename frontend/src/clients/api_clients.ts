@@ -1,12 +1,14 @@
-
-import axios, { AxiosResponse } from "axios";
-import { ApiClientRequest, UploadExportResponse, ExportStatusResponse } from "../types/client_types";
+import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
+import {
+  ApiClientRequest,
+  UploadExportResponse,
+  ExportStatusResponse,
+} from "../types/client_types";
 import { ENDPOINTS } from "../config/apiConstants";
 
-
 export default class ApiClient {
-  private buildAxiosConfig(config: ApiClientRequest): any {
-    const axiosConfig: any = {
+  private buildAxiosConfig(config: ApiClientRequest): AxiosRequestConfig {
+    const axiosConfig: AxiosRequestConfig = {
       method: config.httpMethod,
       url: config.path,
     };
