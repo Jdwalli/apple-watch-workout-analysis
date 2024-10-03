@@ -38,11 +38,13 @@ const WorkoutCharts: React.FC<Props> = (props: Props) => {
     ([_, value]) => value
   );
   const defaultTab = availableTabs[0]?.[0] || "";
+  console.log(availableTabs.length > 0 ? availableTabs.length : 8)
+  console.log(availableTabs)
 
   return (
-    <Tabs defaultValue={defaultTab} className="w-full  overflow-hidden">
+    <Tabs defaultValue={defaultTab} className="w-full">
       <TabsList
-        className={`grid w-full grid-cols-${availableTabs.length > 0 ? availableTabs.length : 8} mb-4`}
+        className={`grid w-full grid-cols-${availableTabs.length.toString()} mb-4`}
       >
         {availableCharts.heartRate && (
           <TabsTrigger value="heartRate">Heart Rate</TabsTrigger>
