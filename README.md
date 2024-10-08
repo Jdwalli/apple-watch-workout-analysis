@@ -1,4 +1,4 @@
-# Apple Watch Dashboard
+# Apple Watch Workout Analysis Tool
 
 _Application designed to allow users to analyze their workouts captured by the Apple Watch_
 
