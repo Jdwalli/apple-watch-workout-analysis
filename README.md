@@ -1,18 +1,17 @@
 # Apple Watch Dashboard
-*Application designed to allow users to analyze their workouts captured by the Apple Watch*
 
+_Application designed to allow users to analyze their workouts captured by the Apple Watch_
 
-
-Application designed for users to analyze and visualize workout data captured by their Apple Watch.
-
+<img src="./frontend/src/assets/screenshots/HomeScreenshot.png" alt="Screenshot of the homepage">
+<img src="./frontend/src/assets/screenshots/WorkoutPageScreenshot.png" alt="Screenshot of the workout page">
+<img src="./frontend/src/assets/screenshots/WorkoutPagePerformanceScreenshot.png" alt="Another screenshot of the workout page">
 
 ## Tech Stack
 
-* Vite (as the frontend framework)
-* Shadcn / Tailwind (for styling the frontend)
-* Python (for building the backend API and services)
-* Pandas (for data analysis)
-
+- Vite (as the frontend framework)
+- Shadcn / Tailwind (for styling the frontend)
+- Python (for building the backend API and services)
+- Pandas (for data analysis)
 
 ## Installation
 
